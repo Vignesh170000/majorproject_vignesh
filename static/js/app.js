@@ -431,7 +431,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --------------------------------------------------
-    // 5. Client-Side Engine Fallback (For GitHub Pages & Static Web Hosts)
+    // 5. Client-Side Engine Fallback (For Live Public GitHub Pages Deployment)
     // --------------------------------------------------
     async function processCommandClientSide(cmdText) {
         const cmd = cmdText.trim().toLowerCase();
@@ -439,7 +439,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let actionCategory = 'response';
         let details = null;
 
-        // 1. Greeting
+        // 1. Greeting & Identity
         if (/hello|hi|hey|who are you|what is your name/.test(cmd)) {
             responseText = "Hello! I am ARIA, your AI Voice Assistant. How can I assist you today?";
             actionCategory = "greeting";
@@ -448,7 +448,7 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (/calculate|plus|minus|times|divided by|\d+\s*[\+\-\*\/x]\s*\d+/.test(cmd)) {
             actionCategory = "math";
             try {
-                let expr = cmd.replace(/calculate|what is|how much is/g, '').replace(/plus/g, '+').replace(/minus/g, '-').replace(/times|x/g, '*').replace(/divided by/g, '/').trim();
+                let expr = cmd.replace(/can you|calculate|what is|how much is/gi, '').replace(/plus/gi, '+').replace(/minus/gi, '-').replace(/times|x/gi, '*').replace(/divided by/gi, '/').trim();
                 let cleanExpr = expr.replace(/[^0-9\+\-\*\/\.\(\)\s]/g, '');
                 if (cleanExpr) {
                     let result = Function(`'use strict'; return (${cleanExpr})`)();
@@ -484,21 +484,21 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (cmd.includes('youtube')) {
             actionCategory = "open_app";
             try { window.open('https://www.youtube.com', '_blank'); } catch(e) {}
-            responseText = "Opening YouTube in a new tab.";
+            responseText = "Opening YouTube in a new browser tab.";
             details = { url: "https://www.youtube.com" };
         }
         // 7. Google Web App
         else if (cmd.includes('google') && !cmd.includes('search')) {
             actionCategory = "open_app";
             try { window.open('https://www.google.com', '_blank'); } catch(e) {}
-            responseText = "Opening Google in a new tab.";
+            responseText = "Opening Google in a new browser tab.";
             details = { url: "https://www.google.com" };
         }
         // 8. GitHub Web App
         else if (cmd.includes('github')) {
             actionCategory = "open_app";
             try { window.open('https://github.com', '_blank'); } catch(e) {}
-            responseText = "Opening GitHub in a new tab.";
+            responseText = "Opening GitHub in a new browser tab.";
             details = { url: "https://github.com" };
         }
         // 9. Jokes
@@ -518,20 +518,35 @@ document.addEventListener('DOMContentLoaded', () => {
             actionCategory = "system_stats";
             responseText = "System Monitoring: Browser Client Engine active. Memory & Web Speech API operational.";
         }
-        // 11. Search & Information Queries (Wikipedia / Web Search)
+        // 11. Search & Information Queries (Wikipedia Search API Report)
         else {
             actionCategory = "google_search_report";
             let cleanQuery = cmd.replace(/can you|tell me|describe me|describe|explain|search result|search report|search google for|search web for|search for|google|wikipedia/gi, '').trim();
             if (!cleanQuery) cleanQuery = cmd;
 
             const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(cleanQuery)}`;
+            const relatedTopics = [];
 
             try {
-                const wikiRes = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(cleanQuery)}`);
+                const apiReqUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(cleanQuery)}&format=json&origin=*`;
+                const wikiRes = await fetch(apiReqUrl);
+                
                 if (wikiRes.ok) {
                     const wikiData = await wikiRes.json();
-                    if (wikiData.extract) {
-                        responseText = `According to Wikipedia: ${wikiData.extract}`;
+                    const searchResults = (wikiData.query && wikiData.query.search) ? wikiData.query.search : [];
+                    
+                    if (searchResults.length > 0) {
+                        const topMatch = searchResults[0];
+                        const cleanSnippet = topMatch.snippet.replace(/<[^>]*>?/gm, '');
+                        responseText = `According to Wikipedia (${topMatch.title}): ${cleanSnippet}...`;
+
+                        for (let i = 0; i < Math.min(3, searchResults.length); i++) {
+                            const item = searchResults[i];
+                            relatedTopics.push({
+                                title: item.title,
+                                snippet: item.snippet.replace(/<[^>]*>?/gm, '')
+                            });
+                        }
                     } else {
                         responseText = `Information retrieved for '${cleanQuery}'. Click the search link below to view complete Google search results.`;
                     }
@@ -539,19 +554,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     responseText = `Search results compiled for '${cleanQuery}'. Click the link below to view full search results on Google.`;
                 }
             } catch(e) {
-                responseText = `Search results retrieved for '${cleanQuery}'. Click below to open full search page.`;
+                responseText = `Search results retrieved for '${cleanQuery}'. Click below to open full Google search page.`;
             }
 
             details = {
                 query: cleanQuery,
                 url: searchUrl,
-                related_results: [
-                    { title: `Explore '${cleanQuery}' on Google`, snippet: `View live web results, articles, and media regarding ${cleanQuery}.` }
+                related_results: relatedTopics.length > 0 ? relatedTopics : [
+                    { title: `Explore '${cleanQuery}' on Google`, snippet: `View live web search results, articles, and media for ${cleanQuery}.` }
                 ]
             };
         }
 
-        // Render card, log, and speak aloud
+        // Render response card, append to activity log, and speak response out loud
         playChimeSuccess();
         displayResponseCard(actionCategory, responseText, details);
         appendLog('assistant', `🤖 ${responseText}`);

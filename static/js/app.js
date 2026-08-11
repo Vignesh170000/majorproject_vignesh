@@ -826,6 +826,16 @@ document.addEventListener('DOMContentLoaded', () => {
         updateAuthUserUI();
         if (authModal) authModal.style.display = 'none';
         appendLog('system', `👤 Logged in as ${user.name} (${user.provider})`);
+        
+        // Sync user profile to persistent cloud/SQLite database
+        try {
+            fetch('/api/db/user', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(user)
+            }).catch(err => {});
+        } catch(e) {}
+
         loadHistoryFromStorage();
     }
 
@@ -952,6 +962,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         localStorage.setItem('aria_saved_sessions', JSON.stringify(savedSessions));
+
+        // Sync message to persistent cloud database
+        try {
+            fetch(`/api/db/history?user_id=${encodeURIComponent(currentUser.id || 'guest_user')}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    session_id: currentSessionId,
+                    role: role,
+                    message: text,
+                    category: 'chat'
+                })
+            }).catch(err => {});
+        } catch(e) {}
+
         renderHistoryList();
     }
 

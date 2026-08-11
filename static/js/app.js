@@ -210,6 +210,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         logStream.appendChild(item);
         logStream.scrollTop = logStream.scrollHeight;
+
+        if (type === 'user' || type === 'assistant') {
+            try { saveActiveMessage(type, message); } catch(e) {}
+        }
     }
 
     function displayResponseCard(category, responseText, details = null) {
@@ -777,6 +781,264 @@ document.addEventListener('DOMContentLoaded', () => {
             commandInput.value = '';
         });
     });
+
+    // --------------------------------------------------
+    // 8. User Authentication Manager (GitHub, Apple ID, Google, Email)
+    // --------------------------------------------------
+    let currentUser = JSON.parse(localStorage.getItem('aria_logged_user')) || {
+        id: 'guest_user',
+        name: 'Guest User',
+        email: 'guest@aria.ai',
+        provider: 'Guest'
+    };
+
+    const btnUserAuth = document.getElementById('btn-user-auth');
+    const userDisplayName = document.getElementById('user-display-name');
+    const authModal = document.getElementById('auth-modal');
+    const btnAuthClose = document.getElementById('btn-auth-close');
+    const btnLoginGithub = document.getElementById('btn-login-github');
+    const btnLoginApple = document.getElementById('btn-login-apple');
+    const btnLoginGoogle = document.getElementById('btn-login-google');
+    const btnAuthSubmit = document.getElementById('btn-auth-submit');
+    const btnAuthGuest = document.getElementById('btn-auth-guest');
+    const authEmail = document.getElementById('auth-email');
+    const authPassword = document.getElementById('auth-password');
+
+    function updateAuthUserUI() {
+        if (userDisplayName) {
+            userDisplayName.textContent = currentUser.name || 'Sign In';
+        }
+        if (btnUserAuth) {
+            if (currentUser.provider !== 'Guest') {
+                btnUserAuth.style.background = 'rgba(16, 185, 129, 0.18)';
+                btnUserAuth.style.borderColor = 'var(--success)';
+            } else {
+                btnUserAuth.style.background = 'rgba(0, 242, 254, 0.12)';
+                btnUserAuth.style.borderColor = 'rgba(0, 242, 254, 0.3)';
+            }
+        }
+    }
+    updateAuthUserUI();
+
+    function saveUserSession(user) {
+        currentUser = user;
+        localStorage.setItem('aria_logged_user', JSON.stringify(user));
+        updateAuthUserUI();
+        if (authModal) authModal.style.display = 'none';
+        appendLog('system', `👤 Logged in as ${user.name} (${user.provider})`);
+        loadHistoryFromStorage();
+    }
+
+    if (btnUserAuth) {
+        btnUserAuth.addEventListener('click', () => {
+            if (currentUser.provider !== 'Guest') {
+                if (confirm(`Logged in as ${currentUser.name} (${currentUser.email}). Log out?`)) {
+                    saveUserSession({ id: 'guest_user', name: 'Guest User', email: 'guest@aria.ai', provider: 'Guest' });
+                }
+            } else if (authModal) {
+                authModal.style.display = 'flex';
+            }
+        });
+    }
+
+    if (btnAuthClose) btnAuthClose.addEventListener('click', () => { authModal.style.display = 'none'; });
+
+    if (btnLoginGithub) {
+        btnLoginGithub.addEventListener('click', () => {
+            saveUserSession({
+                id: 'github_' + Date.now(),
+                name: 'GitHub Developer',
+                email: 'user@github.com',
+                provider: 'GitHub'
+            });
+        });
+    }
+
+    if (btnLoginApple) {
+        btnLoginApple.addEventListener('click', () => {
+            saveUserSession({
+                id: 'apple_' + Date.now(),
+                name: 'Apple User',
+                email: 'user@icloud.com',
+                provider: 'Apple ID'
+            });
+        });
+    }
+
+    if (btnLoginGoogle) {
+        btnLoginGoogle.addEventListener('click', () => {
+            saveUserSession({
+                id: 'google_' + Date.now(),
+                name: 'Google User',
+                email: 'user@gmail.com',
+                provider: 'Google'
+            });
+        });
+    }
+
+    if (btnAuthSubmit) {
+        btnAuthSubmit.addEventListener('click', () => {
+            const email = authEmail ? authEmail.value.trim() : '';
+            if (email) {
+                const nameStr = email.split('@')[0];
+                saveUserSession({
+                    id: 'email_' + Date.now(),
+                    name: nameStr.charAt(0).toUpperCase() + nameStr.slice(1),
+                    email: email,
+                    provider: 'Email'
+                });
+            } else {
+                alert('Please enter a valid email address.');
+            }
+        });
+    }
+
+    if (btnAuthGuest) {
+        btnAuthGuest.addEventListener('click', () => {
+            saveUserSession({
+                id: 'guest_user',
+                name: 'Guest User',
+                email: 'guest@aria.ai',
+                provider: 'Guest'
+            });
+        });
+    }
+
+    // --------------------------------------------------
+    // 9. Persistent Chat History & Session Storage Manager
+    // --------------------------------------------------
+    let currentSessionId = 'session_' + Date.now();
+    let savedSessions = JSON.parse(localStorage.getItem('aria_saved_sessions')) || [];
+
+    const btnToggleHistory = document.getElementById('btn-toggle-history');
+    const historyDrawer = document.getElementById('history-drawer');
+    const btnHistoryClose = document.getElementById('btn-history-close');
+    const btnNewChat = document.getElementById('btn-new-chat');
+    const btnClearHistory = document.getElementById('btn-clear-history');
+    const historyItemsList = document.getElementById('history-items-list');
+
+    function saveActiveMessage(role, text) {
+        let activeSession = savedSessions.find(s => s.id === currentSessionId);
+        if (!activeSession) {
+            activeSession = {
+                id: currentSessionId,
+                title: text.length > 30 ? text.substring(0, 30) + '...' : text,
+                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                messages: []
+            };
+            savedSessions.unshift(activeSession);
+        }
+
+        activeSession.messages.push({
+            role: role,
+            text: text,
+            time: new Date().toLocaleTimeString()
+        });
+
+        localStorage.setItem('aria_saved_sessions', JSON.stringify(savedSessions));
+        renderHistoryList();
+    }
+
+    function renderHistoryList() {
+        if (!historyItemsList) return;
+
+        if (savedSessions.length === 0) {
+            historyItemsList.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 0.9rem; padding: 30px 10px;">
+                No previous conversation sessions saved yet.<br>Start speaking or typing above to record chat history!
+            </div>`;
+            return;
+        }
+
+        let html = '';
+        savedSessions.forEach(session => {
+            const isCurrent = session.id === currentSessionId;
+            html += `<div class="history-item-card" data-id="${session.id}" style="background: ${isCurrent ? 'rgba(0, 242, 254, 0.15)' : 'rgba(255, 255, 255, 0.04)'}; border: 1px solid ${isCurrent ? 'var(--accent-cyan)' : 'rgba(255, 255, 255, 0.08)'}; padding: 12px 14px; border-radius: var(--radius-md); cursor: pointer; transition: all 0.2s ease;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                    <span style="font-weight: 700; font-size: 0.92rem; color: ${isCurrent ? 'var(--accent-cyan)' : 'var(--text-primary)'};">${session.title}</span>
+                    <span style="font-size: 0.72rem; color: var(--text-muted);">${session.timestamp}</span>
+                </div>
+                <div style="font-size: 0.8rem; color: var(--text-secondary);">${session.messages.length} messages saved</div>
+            </div>`;
+        });
+
+        historyItemsList.innerHTML = html;
+
+        // Attach Click Listener to Session Cards
+        historyItemsList.querySelectorAll('.history-item-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const sid = card.getAttribute('data-id');
+                loadSessionMessages(sid);
+            });
+        });
+    }
+
+    function loadSessionMessages(sessionId) {
+        const session = savedSessions.find(s => s.id === sessionId);
+        if (!session) return;
+
+        currentSessionId = session.id;
+        const logStream = document.getElementById('log-stream');
+        if (logStream) {
+            logStream.innerHTML = `<div class="log-item system">
+                <span class="log-tag">RESTORED SESSION</span>
+                <span>Restored session "${session.title}" (${session.messages.length} messages)</span>
+            </div>`;
+            session.messages.forEach(m => {
+                const item = document.createElement('div');
+                item.className = `log-item ${m.role}`;
+                item.innerHTML = `<span class="log-tag">${m.role.toUpperCase()} • ${m.time}</span><span>${m.text}</span>`;
+                logStream.appendChild(item);
+            });
+            logStream.scrollTop = logStream.scrollHeight;
+        }
+        renderHistoryList();
+        if (historyDrawer) historyDrawer.style.display = 'none';
+    }
+
+    function loadHistoryFromStorage() {
+        renderHistoryList();
+    }
+
+    if (btnToggleHistory) {
+        btnToggleHistory.addEventListener('click', () => {
+            renderHistoryList();
+            if (historyDrawer) historyDrawer.style.display = 'flex';
+        });
+    }
+
+    if (btnHistoryClose) {
+        btnHistoryClose.addEventListener('click', () => {
+            if (historyDrawer) historyDrawer.style.display = 'none';
+        });
+    }
+
+    if (btnNewChat) {
+        btnNewChat.addEventListener('click', () => {
+            currentSessionId = 'session_' + Date.now();
+            const logStream = document.getElementById('log-stream');
+            if (logStream) {
+                logStream.innerHTML = `<div class="log-item system">
+                    <span class="log-tag">NEW SESSION INITIALIZED</span>
+                    <span>SpeechRecognition & pyttsx3 engine online.</span>
+                </div>`;
+            }
+            renderHistoryList();
+            if (historyDrawer) historyDrawer.style.display = 'none';
+            appendLog('system', '✨ Started new conversation session.');
+        });
+    }
+
+    if (btnClearHistory) {
+        btnClearHistory.addEventListener('click', () => {
+            if (confirm('Are you sure you want to delete all saved chat history sessions?')) {
+                savedSessions = [];
+                localStorage.removeItem('aria_saved_sessions');
+                currentSessionId = 'session_' + Date.now();
+                renderHistoryList();
+                appendLog('system', '🧹 Chat history cleared.');
+            }
+        });
+    }
 
     // Start Dashboard Polling
     updateSystemDashboard();

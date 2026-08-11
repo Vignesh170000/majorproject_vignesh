@@ -84,6 +84,30 @@ def trigger_listen():
             "message": "No clear speech detected. Please try speaking again."
         })
 
+@app.route('/api/auth/login', methods=['POST'])
+def api_auth_login():
+    data = request.json or {}
+    provider = data.get('provider', 'Email')
+    email = data.get('email', 'user@example.com')
+    name = data.get('name', email.split('@')[0].capitalize())
+    user_id = f"{provider.lower()}_{int(datetime.datetime.now().timestamp())}"
+    return jsonify({
+        'status': 'success',
+        'user': {
+            'id': user_id,
+            'name': name,
+            'email': email,
+            'provider': provider
+        }
+    })
+
+@app.route('/api/history', methods=['GET', 'POST'])
+def api_history():
+    if request.method == 'POST':
+        data = request.json or {}
+        return jsonify({'status': 'success', 'saved_session': data})
+    return jsonify({'status': 'success', 'sessions': []})
+
 if __name__ == '__main__':
     print("🚀 Starting AI Voice Assistant Web Interface on http://localhost:5000")
     app.run(host='0.0.0.0', port=5000, debug=False, use_reloader=False)

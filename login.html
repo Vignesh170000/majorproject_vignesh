@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - ARIA AI Voice Assistant</title>
+    <meta name="description" content="Sign in to your ARIA AI Voice Assistant account with GitHub, Apple ID, Google, or Email.">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #070913;
+            --card-bg: rgba(15, 22, 41, 0.85);
+            --card-border: rgba(0, 242, 254, 0.25);
+            --accent-cyan: #00f2fe;
+            --accent-blue: #4facfe;
+            --accent-purple: #7f00ff;
+            --accent-pink: #f5576c;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --font-main: 'Outfit', sans-serif;
+            --font-heading: 'Space Grotesk', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(127, 0, 255, 0.3) 0%, transparent 45%),
+                radial-gradient(circle at 85% 85%, rgba(0, 242, 254, 0.25) 0%, transparent 45%);
+            background-attachment: fixed;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 460px;
+            background: var(--card-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 36px 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 242, 254, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .auth-header {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-logo {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.5);
+        }
+
+        .brand-logo svg {
+            width: 32px;
+            height: 32px;
+            fill: #ffffff;
+        }
+
+        .auth-title {
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff, var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .auth-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* OAuth Provider Buttons */
+        .social-btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-social {
+            width: 100%;
+            padding: 13px;
+            border-radius: 12px;
+            font-family: var(--font-main);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.25s ease;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .btn-social:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-github { background: #24292e; color: #ffffff; }
+        .btn-apple { background: #000000; color: #ffffff; border-color: rgba(255, 255, 255, 0.25); }
+        .btn-google { background: rgba(255, 255, 255, 0.08); color: #ffffff; }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Form Inputs */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .form-input {
+            width: 100%;
+            background: rgba(8, 12, 24, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 13px 16px;
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            font-size: 0.98rem;
+            outline: none;
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .form-input:focus {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 18px rgba(0, 242, 254, 0.3);
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            color: #ffffff;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-family: var(--font-main);
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 242, 254, 0.4);
+            transition: all 0.25s ease;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 25px rgba(0, 242, 254, 0.6);
+        }
+
+        .btn-guest {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 11px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-guest:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .alert-box {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            text-align: center;
+            display: none;
+        }
+
+        .back-link {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover { color: var(--accent-cyan); }
+    </style>
+</head>
+<body>
+
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="brand-logo">
+                <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.2 19.57 10.55 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
+            </div>
+            <h1 class="auth-title">Sign In to ARIA</h1>
+            <p class="subtitle">Access your AI Voice Assistant & saved chat history</p>
+        </div>
+
+        <div class="alert-box" id="alert-box"></div>
+
+        <!-- Social OAuth Sign In Options -->
+        <div class="social-btn-group">
+            <button class="btn-social btn-github" id="login-github">
+                <svg viewBox="0 0 24 24" style="width:20px; height:20px; fill:#fff;"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                Continue with GitHub
+            </button>
+            <button class="btn-social btn-apple" id="login-apple">
+                <svg viewBox="0 0 24 24" style="width:20px; height:20px; fill:#fff;"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.54c.66-.8 1.11-1.92.99-3.04-.96.04-2.12.64-2.81 1.44-.62.72-1.16 1.87-1.01 2.97 1.07.08 2.17-.57 2.83-1.37z"/></svg>
+                Continue with Apple ID
+            </button>
+            <button class="btn-social btn-google" id="login-google">
+                <svg viewBox="0 0 24 24" style="width:20px; height:20px; fill:#ea4335;"><path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.761H12.545z"/></svg>
+                Continue with Google
+            </button>
+        </div>
+
+        <div class="divider">OR SIGN IN WITH EMAIL</div>
+
+        <!-- Email & Password Form -->
+        <form id="email-login-form" style="display: flex; flex-direction: column; gap: 14px;">
+            <div class="form-group">
+                <label class="form-label" for="login-email">Email Address</label>
+                <input type="email" id="login-email" class="form-input" placeholder="name@example.com" required autocomplete="email">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="login-password">Password</label>
+                <input type="password" id="login-password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn-primary" id="btn-submit">Sign In / Create Account</button>
+        </form>
+
+        <button class="btn-guest" id="login-guest">👤 Continue as Guest User</button>
+
+        <a href="index.html" class="back-link">← Back to Voice Control Center</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const alertBox = document.getElementById('alert-box');
+            const emailForm = document.getElementById('email-login-form');
+            const loginEmail = document.getElementById('login-email');
+
+            function completeLogin(user) {
+                localStorage.setItem('aria_logged_user', JSON.stringify(user));
+                alertBox.style.display = 'block';
+                alertBox.textContent = `✓ Welcome, ${user.name}! Redirecting to Assistant...`;
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+            }
+
+            document.getElementById('login-github').addEventListener('click', () => {
+                completeLogin({
+                    id: 'github_' + Date.now(),
+                    name: 'GitHub Developer',
+                    email: 'developer@github.com',
+                    provider: 'GitHub'
+                });
+            });
+
+            document.getElementById('login-apple').addEventListener('click', () => {
+                completeLogin({
+                    id: 'apple_' + Date.now(),
+                    name: 'Apple User',
+                    email: 'user@icloud.com',
+                    provider: 'Apple ID'
+                });
+            });
+
+            document.getElementById('login-google').addEventListener('click', () => {
+                completeLogin({
+                    id: 'google_' + Date.now(),
+                    name: 'Google User',
+                    email: 'user@gmail.com',
+                    provider: 'Google'
+                });
+            });
+
+            document.getElementById('login-guest').addEventListener('click', () => {
+                completeLogin({
+                    id: 'guest_user',
+                    name: 'Guest User',
+                    email: 'guest@aria.ai',
+                    provider: 'Guest'
+                });
+            });
+
+            emailForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = loginEmail.value.trim();
+                if (email) {
+                    const nameStr = email.split('@')[0];
+                    completeLogin({
+                        id: 'email_' + Date.now(),
+                        name: nameStr.charAt(0).toUpperCase() + nameStr.slice(1),
+                        email: email,
+                        provider: 'Email'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

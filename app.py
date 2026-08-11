@@ -12,6 +12,10 @@ assistant = VoiceAssistant(name="Aria")
 def index():
     return render_template('index.html', assistant_name=assistant.name)
 
+@app.route('/login')
+def login_page():
+    return render_template('login.html')
+
 @app.route('/presentation')
 def presentation():
     """Interactive HTML Slide Presentation Deck."""

@@ -820,6 +820,43 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     updateAuthUserUI();
 
+    // --------------------------------------------------
+    // Firebase Realtime Database Cloud Sync (100% Free Cloud Engine)
+    // --------------------------------------------------
+    const FIREBASE_DB_URL = "https://aria-voice-assistant-788a6-default-rtdb.asia-southeast1.firebasedatabase.app";
+
+    function syncUserToFirebase(user) {
+        if (!user || !user.id) return;
+        try {
+            fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(user.id)}.json`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(user)
+            }).then(r => r.json()).then(data => {
+                console.log("✓ Firebase User Synced:", data);
+            }).catch(err => console.warn("Firebase User Sync notice:", err));
+        } catch(e) {}
+    }
+
+    function syncHistoryToFirebase(userId, sessionId, role, message) {
+        if (!userId) userId = 'guest_user';
+        try {
+            fetch(`${FIREBASE_DB_URL}/users/${encodeURIComponent(userId)}/history.json`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    session_id: sessionId,
+                    role: role,
+                    message: message,
+                    timestamp: new Date().toLocaleTimeString(),
+                    created_at: Date.now()
+                })
+            }).then(r => r.json()).then(data => {
+                console.log("✓ Firebase History Message Synced:", data);
+            }).catch(err => console.warn("Firebase History Sync notice:", err));
+        } catch(e) {}
+    }
+
     function saveUserSession(user) {
         currentUser = user;
         localStorage.setItem('aria_logged_user', JSON.stringify(user));
@@ -827,7 +864,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (authModal) authModal.style.display = 'none';
         appendLog('system', `👤 Logged in as ${user.name} (${user.provider})`);
         
-        // Sync user profile to persistent cloud/SQLite database
+        // Sync user profile to persistent cloud/SQLite database & Firebase Realtime Database
         try {
             fetch('/api/db/user', {
                 method: 'POST',
@@ -836,6 +873,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }).catch(err => {});
         } catch(e) {}
 
+        syncUserToFirebase(user);
         loadHistoryFromStorage();
     }
 
@@ -963,7 +1001,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         localStorage.setItem('aria_saved_sessions', JSON.stringify(savedSessions));
 
-        // Sync message to persistent cloud database
+        // Sync message to persistent cloud database & Firebase Realtime Database
         try {
             fetch(`/api/db/history?user_id=${encodeURIComponent(currentUser.id || 'guest_user')}`, {
                 method: 'POST',
@@ -977,6 +1015,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }).catch(err => {});
         } catch(e) {}
 
+        syncHistoryToFirebase(currentUser.id, currentSessionId, role, text);
         renderHistoryList();
     }
 

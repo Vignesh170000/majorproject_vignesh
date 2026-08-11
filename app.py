@@ -1,9 +1,11 @@
 from flask import Flask, render_template, request, jsonify
+from flask_cors import CORS
 from voice_assistant import VoiceAssistant
 import datetime
 import os
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
+CORS(app)
 assistant = VoiceAssistant(name="Aria")
 
 @app.route('/')

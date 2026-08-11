@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Based Voice Assistant (ARIA) - Interactive HTML Presentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #090d16;
+            --card-bg: rgba(18, 26, 44, 0.75);
+            --card-border: rgba(0, 242, 254, 0.25);
+            --accent-cyan: #00f2fe;
+            --accent-blue: #4facfe;
+            --accent-purple: #7f00ff;
+            --accent-pink: #ff0844;
+            --accent-green: #00e676;
+            --text-main: #f0f6fc;
+            --text-sub: #8b949e;
+            --font-heading: 'Outfit', sans-serif;
+            --font-code: 'Space Grotesk', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(0, 242, 254, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(127, 0, 255, 0.15) 0%, transparent 40%);
+            color: var(--text-main);
+            font-family: var(--font-heading);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Top Header Control Bar */
+        .header-bar {
+            height: 60px;
+            background: rgba(10, 15, 26, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 100;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            letter-spacing: 1px;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .btn-ctrl {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-ctrl:hover {
+            background: var(--accent-blue);
+            color: #fff;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+        }
+
+        .slide-counter {
+            font-family: var(--font-code);
+            font-size: 0.9rem;
+            color: var(--text-sub);
+            padding: 4px 12px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Slide Presentation Container */
+        .presentation-stage {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%;
+            max-width: 1280px;
+            height: calc(100vh - 150px);
+            max-height: 720px;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 44px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px) scale(0.98);
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Slide Typography */
+        .slide-tag {
+            font-family: var(--font-code);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-cyan);
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .slide-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff, var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 24px;
+        }
+
+        .slide-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        /* Grid Layouts inside slides */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        /* Custom Cards */
+        .info-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: transform 0.25s ease, border-color 0.25s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-cyan);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+        }
+
+        .card-desc {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text-sub);
+        }
+
+        /* Tables inside slides */
+        .slide-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .slide-table th {
+            background: rgba(0, 242, 254, 0.15);
+            color: var(--accent-cyan);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 2px solid var(--accent-cyan);
+        }
+
+        .slide-table td {
+            padding: 12px 16px;
+            font-size: 0.92rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            color: var(--text-main);
+        }
+
+        .slide-table tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .badge-pass {
+            background: rgba(0, 230, 118, 0.15);
+            color: var(--accent-green);
+            border: 1px solid var(--accent-green);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            display: inline-block;
+        }
+
+        /* Bottom Progress Bar */
+        .progress-bar-wrap {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            width: 100%;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 8.33%;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+            transition: width 0.3s ease;
+        }
+
+        /* Navigation Arrows on sides */
+        .nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: rgba(18, 26, 44, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 50;
+            transition: all 0.25s ease;
+        }
+
+        .nav-arrow:hover {
+            background: var(--accent-cyan);
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.5);
+        }
+
+        .nav-left { left: 24px; }
+        .nav-right { right: 24px; }
+
+        /* Title Slide Special Styles */
+        .hero-title-box {
+            text-align: center;
+            margin: auto 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .hero-title-box h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            background: linear-gradient(135deg, #ffffff 0%, var(--accent-cyan) 50%, var(--accent-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tech-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 16px;
+        }
+
+        .tech-badge {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            color: var(--accent-cyan);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Control Bar -->
+    <header class="header-bar">
+        <div class="header-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="var(--accent-cyan)"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
+            <span>PROJECT ARIA &bull; PRESENTATION DECK</span>
+        </div>
+        <div class="header-controls">
+            <span class="slide-counter" id="slide-num">Slide 1 of 12</span>
+            <button class="btn-ctrl" id="btn-prev">‹ Previous</button>
+            <button class="btn-ctrl" id="btn-next">Next ›</button>
+            <button class="btn-ctrl" id="btn-fullscreen">⛶ Fullscreen</button>
+            <a href="index.html" class="btn-ctrl" style="text-decoration:none;">🏠 Back to Assistant</a>
+        </div>
+    </header>
+
+    <!-- Side Navigation Arrows -->
+    <div class="nav-arrow nav-left" id="arrow-prev">‹</div>
+    <div class="nav-arrow nav-right" id="arrow-next">›</div>
+
+    <!-- Presentation Stage -->
+    <main class="presentation-stage">
+
+        <!-- SLIDE 1: Title Slide -->
+        <section class="slide active" data-slide="1">
+            <div class="hero-title-box">
+                <div class="slide-tag">MAJOR ACADEMIC CODING PROJECT</div>
+                <h1>AI-BASED VOICE ASSISTANT (ARIA)</h1>
+                <p style="font-size:1.3rem; color:var(--text-sub); max-width:800px;">
+                    An intelligent speech recognition, text-to-speech synthesis, system automation, and web search intelligence system with interactive Glassmorphism control center.
+                </p>
+                <div class="tech-badges">
+                    <span class="tech-badge">Python 3.13</span>
+                    <span class="tech-badge">SpeechRecognition</span>
+                    <span class="tech-badge">pyttsx3 TTS</span>
+                    <span class="tech-badge">Flask REST API</span>
+                    <span class="tech-badge">PyAudio (31 Mics)</span>
+                    <span class="tech-badge">Google Search Reports</span>
+                    <span class="tech-badge">Glassmorphism UI</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 2: Executive Summary -->
+        <section class="slide" data-slide="2">
+            <div class="slide-tag">PROJECT BACKGROUND</div>
+            <div class="slide-title">1. Executive Summary & Industry Context</div>
+            <div class="slide-body">
+                <div class="grid-2">
+                    <div class="info-card">
+                        <div class="card-header">💡 Industry Evolution</div>
+                        <div class="card-desc">
+                            Voice user interfaces (VUIs) have transformed digital computing. Assistants like Google Assistant, Apple Siri, and Amazon Alexa enable hands-free task execution, boosting productivity and accessibility for users worldwide.
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="card-header">🎯 Project Purpose</div>
+                        <div class="card-desc">
+                            This project designs, builds, and deploys a complete AI-powered Voice Assistant (ARIA) simulating real-world smart assistant capabilities: audio listening, vocal speech-to-text, intent routing, desktop application launching, and live search reports.
+                        </div>
+                    </div>
+                </div>
+                <div class="info-card" style="margin-top:10px;">
+                    <div class="card-header">🚀 Key Differentiator</div>
+                    <div class="card-desc">
+                        Combines a local host Python engine (`voice_assistant.py`) with a futuristic web control dashboard (`app.py`), offline/online dual voice synthesis, live host CPU/RAM monitoring, and on-screen interactive Glassmorphism Notepad and Calculator modals.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 3: Problem Statement & Scope -->
+        <section class="slide" data-slide="3">
+            <div class="slide-tag">TECHNICAL CHALLENGES</div>
+            <div class="slide-title">2. Problem Statement & Scope</div>
+            <div class="slide-body">
+                <div class="grid-3">
+                    <div class="info-card">
+                        <div class="card-header">🎙️ Audio Processing</div>
+                        <div class="card-desc">
+                            Capturing microphone audio reliably across various operating systems and handling hardware channel detection without system crashes.
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="card-header">🧠 Intent Router</div>
+                        <div class="card-desc">
+                            Parsing user intent accurately between time queries, math expressions, application launches, and multi-sentence web searches.
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="card-header">🖥️ GUI Accessibility</div>
+                        <div class="card-desc">
+                            Providing both a standalone terminal CLI and an ultra-interactive Web Control Center with audio waveform canvas animations.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 4: Project Objectives -->
+        <section class="slide" data-slide="4">
+            <div class="slide-tag">PROJECT REQUIREMENTS</div>
+            <div class="slide-title">3. Core Functional Objectives</div>
+            <div class="slide-body">
+                <div class="grid-2">
+                    <div class="info-card">
+                        <div class="card-header">1. Speech Recognition (STT)</div>
+                        <div class="card-desc">Capture real-time voice input from host or browser microphone and convert to transcript strings via Google STT API.</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="card-header">2. Text-to-Speech (TTS)</div>
+                        <div class="card-desc">Deliver audible spoken responses through computer host speakers (`pyttsx3`) and browser voice (`SpeechSynthesis`).</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="card-header">3. System Automation</div>
+                        <div class="card-desc">Launch local applications (Notepad, Calculator, CMD, Explorer, Paint) and web portals (YouTube, Google, StackOverflow).</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="card-header">4. Search Intelligence</div>
+                        <div class="card-desc">Extract Wikipedia summaries and compile multi-topic Google Search Reports with title and snippet cards.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 5: System Architecture -->
+        <section class="slide" data-slide="5">
+            <div class="slide-tag">SYSTEM DESIGN</div>
+            <div class="slide-title">4. 3-Tier System Architecture & Data Flow</div>
+            <div class="slide-body">
+                <table class="slide-table">
+                    <thead>
+                        <tr>
+                            <th>Layer / Tier</th>
+                            <th>Components Used</th>
+                            <th>Operational Functionality</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>1. Core Voice Engine</strong></td>
+                            <td>`voice_assistant.py`<br>`SpeechRecognition`, `pyttsx3`, `PyAudio`</td>
+                            <td>Hardware microphone capture, Speech-to-Text transcription, TTS voice engine synthesis, intent parsing, math solving.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>2. Web API Server</strong></td>
+                            <td>`app.py`<br>Flask REST Framework</td>
+                            <td>Exposes `/api/command`, `/api/status`, and `/api/listen` HTTP endpoints connecting frontend UI to voice core.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>3. Web Control Center</strong></td>
+                            <td>`index.html`, `app.js`<br>HTML5 / CSS3 Glassmorphism</td>
+                            <td>Real-time CPU/RAM gauges, canvas audio visualizer, Web Audio synth tones, interactive Notepad & Calculator modals.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SLIDE 6: Audio Capture & STT -->
+        <section class="slide" data-slide="6">
+            <div class="slide-tag">SPEECH PROCESSING</div>
+            <div class="slide-title">5. Audio Capture & Speech Recognition (STT)</div>
+            <div class="slide-body">
+                <div class="grid-2">
+                    <div class="info-card">
+                        <div class="card-header">🎤 PyAudio 31-Channel Detection</div>
+                        <div class="card-desc">
+                            Integrated `PyAudio-0.2.14` allowing Python to enumerate and access 31 system microphone hardware input channels on Windows (`Microphone Array (Realtek)`).
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="card-header">🌐 Browser Web Audio Fallback</div>
+                        <div class="card-desc">
+                            Frontend `app.js` uses `navigator.mediaDevices.getUserMedia({ audio: true })` to prompt for browser microphone permissions, with seamless fallback to host server mic (`/api/listen`).
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 7: Text-to-Speech (TTS) Engine -->
+        <section class="slide" data-slide="7">
+            <div class="slide-tag">VOICE SYNTHESIS</div>
+            <div class="slide-title">6. Dual-Engine Text-to-Speech (TTS)</div>
+            <div class="slide-body">
+                <div class="grid-2">
+                    <div class="info-card">
+                        <div class="card-header">🔊 Host Engine (`pyttsx3`)</div>
+                        <div class="card-desc">
+                            Offline TTS engine executing on Python server host. Configured speech rate (175 WPM) and volume (1.0) for clear speaker playback.
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="card-header">🗣️ Browser Voice (`SpeechSynthesis`)</div>
+                        <div class="card-desc">
+                            Web Speech API synthesis running inside user browser for instant local audio playback alongside server TTS.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 8: Intent Classification & Router -->
+        <section class="slide" data-slide="8">
+            <div class="slide-tag">COMMAND ROUTING</div>
+            <div class="slide-title">7. Intent Router & Command Execution</div>
+            <div class="slide-body">
+                <table class="slide-table">
+                    <thead>
+                        <tr>
+                            <th>Intent Pattern</th>
+                            <th>Sample Command Trigger</th>
+                            <th>Executed Module / Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Time & Date</strong></td>
+                            <td>"What is the current time?"</td>
+                            <td>Returns current 12-hour AM/PM time and formatted date.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Math Solver</strong></td>
+                            <td>"Calculate 144 divided by 12"</td>
+                            <td>Evaluates algebraic word problems safely.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>App Launcher</strong></td>
+                            <td>"Open Notepad"</td>
+                            <td>Launches desktop app & opens interactive on-screen modal.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Search Report</strong></td>
+                            <td>"Describe me about Artificial Intelligence"</td>
+                            <td>Compiles multi-source Google Search Report cards.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>System Stats</strong></td>
+                            <td>"Show system status"</td>
+                            <td>Queries psutil for real-time CPU load % and RAM usage.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SLIDE 9: Google Search Reports -->
+        <section class="slide" data-slide="9">
+            <div class="slide-tag">SEARCH INTELLIGENCE</div>
+            <div class="slide-title">8. Multi-Source Google Search Reports</div>
+            <div class="slide-body">
+                <div class="grid-3">
+                    <div class="info-card">
+                        <div class="card-header">📌 1. Primary AI Summary</div>
+                        <div class="card-desc">Fetches exact 2-3 sentence overview text from Wikipedia API and DuckDuckGo Instant Answers.</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="card-header">📰 2. Related Topic Cards</div>
+                        <div class="card-desc">Extracts top 3 related search topic titles and snippet descriptions for comprehensive research.</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="card-header">🌐 3. Direct Google Search Button</div>
+                        <div class="card-desc">Renders glowing direct URL button (`🌐 View Full Google Search Results Page`) in UI card.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 10: Interactive Modals -->
+        <section class="slide" data-slide="10">
+            <div class="slide-tag">USER INTERFACE</div>
+            <div class="slide-title">9. Interactive Modals (Notepad & Calculator)</div>
+            <div class="slide-body">
+                <div class="grid-2">
+                    <div class="info-card">
+                        <div class="card-header">📝 Interactive Glassmorphism Notepad</div>
+                        <div class="card-desc">
+                            • Opens on screen instantly when user says or clicks "Open Notepad".<br>
+                            • Real-time character and word counters.<br>
+                            • Includes **`💾 Save File`** button (downloads notes as `notes.txt`), Copy to Clipboard, and Clear.
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="card-header">🧮 Interactive Glassmorphism Calculator</div>
+                        <div class="card-desc">
+                            • Opens on screen when user says or clicks "Calculator".<br>
+                            • Responsive grid keypad (`0-9`, `+`, `-`, `×`, `÷`, `=`, `C`, `⌫`).<br>
+                            • Evaluates mathematical equations live on screen.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 11: Automated Testing -->
+        <section class="slide" data-slide="11">
+            <div class="slide-tag">QUALITY ASSURANCE</div>
+            <div class="slide-title">10. Testing & Verification Results (10/10 Passed)</div>
+            <div class="slide-body">
+                <table class="slide-table">
+                    <thead>
+                        <tr>
+                            <th>Test ID</th>
+                            <th>Command Tested</th>
+                            <th>Action Category</th>
+                            <th>Verification Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Test 1</td><td>"what is the current time?"</td><td>`time`</td><td><span class="badge-pass">PASSED (100%)</span></td></tr>
+                        <tr><td>Test 2</td><td>"hello who are you"</td><td>`greeting`</td><td><span class="badge-pass">PASSED (100%)</span></td></tr>
+                        <tr><td>Test 3</td><td>"show system status"</td><td>`system_stats`</td><td><span class="badge-pass">PASSED (100%)</span></td></tr>
+                        <tr><td>Test 4</td><td>"calculate 12 times 8"</td><td>`math`</td><td><span class="badge-pass">PASSED (100%)</span></td></tr>
+                        <tr><td>Test 5</td><td>"tell me a joke"</td><td>`joke`</td><td><span class="badge-pass">PASSED (100%)</span></td></tr>
+                        <tr><td>Test 6</td><td>"open notepad"</td><td>`open_app`</td><td><span class="badge-pass">PASSED (100%)</span></td></tr>
+                        <tr><td>Test 7</td><td>"open youtube"</td><td>`open_app`</td><td><span class="badge-pass">PASSED (100%)</span></td></tr>
+                        <tr><td>Test 8</td><td>"search wikipedia for python"</td><td>`google_search_report`</td><td><span class="badge-pass">PASSED (100%)</span></td></tr>
+                        <tr><td>Test 9</td><td>"goodbye"</td><td>`exit`</td><td><span class="badge-pass">PASSED (100%)</span></td></tr>
+                        <tr><td>Test 10</td><td>"describe me about artificial intelligence"</td><td>`google_search_report`</td><td><span class="badge-pass">PASSED (100%)</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SLIDE 12: Conclusion & Q&A -->
+        <section class="slide" data-slide="12">
+            <div class="slide-tag">FUTURE SCOPE & CONCLUSION</div>
+            <div class="slide-title">11. Conclusion & Project Impact</div>
+            <div class="slide-body">
+                <div class="grid-2">
+                    <div class="info-card">
+                        <div class="card-header">🚀 Future Scope</div>
+                        <div class="card-desc">
+                            1. LLM Conversational Memory Integration (GPT / Gemini APIs).<br>
+                            2. Smart Home IoT Device Automation.<br>
+                            3. Multi-language voice translation and custom voice cloning.
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="card-header">🏆 Summary & Impact</div>
+                        <div class="card-desc">
+                            Project ARIA successfully fulfills all academic and functional requirements. It demonstrates practical mastery of speech processing, REST API design, system automation, and modern web UI engineering.
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align:center; margin-top:20px;">
+                    <h2 style="font-size:2rem; color:var(--accent-cyan);">THANK YOU!</h2>
+                    <p style="color:var(--text-sub); font-size:1.1rem; margin-top:4px;">Questions & Answers (Q&A) Session</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Bottom Progress Bar -->
+    <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progress-fill"></div>
+    </div>
+
+    <!-- Presentation JavaScript Controller -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const totalSlides = slides.length;
+            let currentSlide = 1;
+
+            const slideNumDisplay = document.getElementById('slide-num');
+            const progressFill = document.getElementById('progress-fill');
+            const btnPrev = document.getElementById('btn-prev');
+            const btnNext = document.getElementById('btn-next');
+            const arrowPrev = document.getElementById('arrow-prev');
+            const arrowNext = document.getElementById('arrow-next');
+            const btnFullscreen = document.getElementById('btn-fullscreen');
+
+            function showSlide(index) {
+                if (index < 1) index = 1;
+                if (index > totalSlides) index = totalSlides;
+                currentSlide = index;
+
+                slides.forEach(s => s.classList.remove('active'));
+                const activeSlide = document.querySelector(`.slide[data-slide="${currentSlide}"]`);
+                if (activeSlide) activeSlide.classList.add('active');
+
+                slideNumDisplay.textContent = `Slide ${currentSlide} of ${totalSlides}`;
+                const pct = (currentSlide / totalSlides) * 100;
+                progressFill.style.width = `${pct}%`;
+            }
+
+            btnPrev.addEventListener('click', () => showSlide(currentSlide - 1));
+            btnNext.addEventListener('click', () => showSlide(currentSlide + 1));
+            arrowPrev.addEventListener('click', () => showSlide(currentSlide - 1));
+            arrowNext.addEventListener('click', () => showSlide(currentSlide + 1));
+
+            // Keyboard Arrow & Space Navigation
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight' || e.key === 'Space') {
+                    showSlide(currentSlide + 1);
+                } else if (e.key === 'ArrowLeft') {
+                    showSlide(currentSlide - 1);
+                }
+            });
+
+            // Fullscreen Toggle
+            btnFullscreen.addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(err => {});
+                } else {
+                    if (document.exitFullscreen) document.exitFullscreen();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

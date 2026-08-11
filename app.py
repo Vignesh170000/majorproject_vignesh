@@ -88,6 +88,40 @@ def trigger_listen():
             "message": "No clear speech detected. Please try speaking again."
         })
 
+# --------------------------------------------------
+# Database Initialization (SQLite - 100% Free Persistent DB)
+# --------------------------------------------------
+DB_FILE = os.path.join(os.path.dirname(__file__), 'database.db')
+
+def init_db():
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            email TEXT NOT NULL,
+            provider TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS chat_history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT NOT NULL,
+            session_id TEXT NOT NULL,
+            role TEXT NOT NULL,
+            message TEXT NOT NULL,
+            category TEXT,
+            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+import sqlite3
+init_db()
+
 @app.route('/api/auth/login', methods=['POST'])
 def api_auth_login():
     data = request.json or {}
@@ -95,6 +129,17 @@ def api_auth_login():
     email = data.get('email', 'user@example.com')
     name = data.get('name', email.split('@')[0].capitalize())
     user_id = f"{provider.lower()}_{int(datetime.datetime.now().timestamp())}"
+
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        cursor.execute('INSERT OR REPLACE INTO users (id, name, email, provider) VALUES (?, ?, ?, ?)',
+                       (user_id, name, email, provider))
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print("DB user save notice:", e)
+
     return jsonify({
         'status': 'success',
         'user': {
@@ -104,6 +149,56 @@ def api_auth_login():
             'provider': provider
         }
     })
+
+@app.route('/api/db/user', methods=['POST'])
+def api_db_user():
+    data = request.json or {}
+    user_id = data.get('id', 'guest_user')
+    name = data.get('name', 'Guest')
+    email = data.get('email', 'guest@aria.ai')
+    provider = data.get('provider', 'Guest')
+    
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        cursor = conn.cursor()
+        cursor.execute('INSERT OR REPLACE INTO users (id, name, email, provider) VALUES (?, ?, ?, ?)',
+                       (user_id, name, email, provider))
+        conn.commit()
+        conn.close()
+        return jsonify({'status': 'success', 'user': {'id': user_id, 'name': name, 'email': email, 'provider': provider}})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.route('/api/db/history', methods=['GET', 'POST', 'DELETE'])
+def api_db_history():
+    user_id = request.args.get('user_id', 'guest_user')
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+
+    if request.method == 'POST':
+        data = request.json or {}
+        session_id = data.get('session_id', 'session_default')
+        role = data.get('role', 'user')
+        message = data.get('message', '')
+        category = data.get('category', 'general')
+        cursor.execute('INSERT INTO chat_history (user_id, session_id, role, message, category) VALUES (?, ?, ?, ?, ?)',
+                       (user_id, session_id, role, message, category))
+        conn.commit()
+        conn.close()
+        return jsonify({'status': 'success'})
+
+    elif request.method == 'DELETE':
+        cursor.execute('DELETE FROM chat_history WHERE user_id = ?', (user_id,))
+        conn.commit()
+        conn.close()
+        return jsonify({'status': 'success', 'message': 'History cleared'})
+
+    else:
+        cursor.execute('SELECT session_id, role, message, category, timestamp FROM chat_history WHERE user_id = ? ORDER BY id ASC', (user_id,))
+        rows = cursor.fetchall()
+        conn.close()
+        messages = [{'session_id': r[0], 'role': r[1], 'message': r[2], 'category': r[3], 'timestamp': r[4]} for r in rows]
+        return jsonify({'status': 'success', 'history': messages})
 
 @app.route('/api/history', methods=['GET', 'POST'])
 def api_history():

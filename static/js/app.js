@@ -707,27 +707,43 @@ document.addEventListener('DOMContentLoaded', () => {
                 try { recognition.stop(); } catch(e) {}
             }
             setListeningState(false);
-            updateStatus('Listening stopped', 'ready');
+            updateStatus('Listening stopped. Click mic to speak again.', 'ready');
         } else {
-            // Request browser microphone permission explicitly
+            const isStaticHost = window.location.hostname.includes('github.io');
+
+            // 1. Request microphone permissions explicitly
             if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 try {
                     await navigator.mediaDevices.getUserMedia({ audio: true });
                 } catch (err) {
-                    console.warn("Browser mic access restricted, switching to host Python microphone...", err);
-                    triggerServerMicListen();
-                    return;
+                    console.warn("Browser microphone access restricted:", err);
+                    if (!isStaticHost) {
+                        triggerServerMicListen();
+                        return;
+                    } else {
+                        updateStatus('⚠️ Please allow microphone access in your browser address bar to speak.', 'ready');
+                        alert('Microphone Access Notice:\nPlease allow microphone permissions in your browser address bar (click lock/tune icon near URL) to speak to ARIA.');
+                        return;
+                    }
                 }
             }
 
+            // 2. Start Web Speech Recognition Engine
             if (recognition) {
                 try {
+                    setListeningState(true);
+                    playBeepStart();
+                    updateStatus('🎙️ Listening... Speak your command now into your microphone!', 'listening');
                     recognition.start();
                 } catch (e) {
-                    triggerServerMicListen();
+                    console.warn("Recognition start notice:", e);
+                    setListeningState(true);
+                    updateStatus('🎙️ Listening for speech...', 'listening');
                 }
-            } else {
+            } else if (!isStaticHost) {
                 triggerServerMicListen();
+            } else {
+                updateStatus('⚠️ Web Speech Recognition not supported by browser. Type your command below.', 'ready');
             }
         }
     });

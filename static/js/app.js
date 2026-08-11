@@ -841,6 +841,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const chipBtnAuth = document.getElementById('chip-btn-auth');
+    const chipBtnHistory = document.getElementById('chip-btn-history');
+
+    if (chipBtnAuth) {
+        chipBtnAuth.addEventListener('click', () => {
+            if (authModal) authModal.style.display = 'flex';
+        });
+    }
+
+    if (chipBtnHistory) {
+        chipBtnHistory.addEventListener('click', () => {
+            renderHistoryList();
+            if (historyDrawer) historyDrawer.style.display = 'flex';
+        });
+    }
+
     if (btnAuthClose) btnAuthClose.addEventListener('click', () => { authModal.style.display = 'none'; });
 
     if (btnLoginGithub) {

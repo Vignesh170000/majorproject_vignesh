@@ -472,35 +472,9 @@
 
             // Google Custom Button Click Handler
             document.getElementById('login-google-custom').addEventListener('click', () => {
-                if (window.google && window.google.accounts && window.google.accounts.id) {
-                    try {
-                        window.google.accounts.id.prompt((notification) => {
-                            if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-                                // Trigger interactive login flow fallback
-                                promptGoogleSimulatedAuth();
-                            }
-                        });
-                    } catch (e) {
-                        promptGoogleSimulatedAuth();
-                    }
-                } else {
-                    promptGoogleSimulatedAuth();
-                }
+                window.location.href = '/google-login';
             });
 
-            function promptGoogleSimulatedAuth() {
-                const userEmail = prompt("Enter your Google Email address:", "user@gmail.com");
-                if (userEmail) {
-                    const userName = userEmail.split('@')[0].replace('.', ' ');
-                    const formattedName = userName.charAt(0).toUpperCase() + userName.slice(1);
-                    sendGoogleAuthToDB({
-                        google_id: 'g_' + Math.floor(Math.random() * 100000000),
-                        email: userEmail,
-                        name: formattedName,
-                        picture: 'https://lh3.googleusercontent.com/a/default-user'
-                    });
-                }
-            }
 
             // Guest Login Button Click Handler
             document.getElementById('login-guest').addEventListener('click', () => {

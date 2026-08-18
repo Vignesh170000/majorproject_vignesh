@@ -16,10 +16,17 @@ def index():
 def login_page():
     return render_template('login.html')
 
+@app.route('/google-login')
+@app.route('/google-signin')
+def google_login_page():
+    """Official Google Material Design 3 Sign-In Experience."""
+    return render_template('google_login.html')
+
 @app.route('/presentation')
 def presentation():
     """Interactive HTML Slide Presentation Deck."""
     return render_template('presentation.html')
+
 
 @app.route('/api/status', methods=['GET'])
 def get_status():

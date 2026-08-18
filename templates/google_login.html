@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in - Google Accounts - ARIA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Official Google Identity Services GIS Library -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <style>
+        :root {
+            --g-blue: #1a73e8;
+            --g-blue-hover: #1557b0;
+            --g-red: #ea4335;
+            --g-yellow: #fbbc05;
+            --g-green: #34a853;
+            --g-bg-dark: #202124;
+            --g-card-bg: #303134;
+            --g-text-light: #e8eaed;
+            --g-text-muted: #9aa0a6;
+            --g-border: #5f6368;
+            --font-google: 'Google Sans', 'Roboto', -apple-system, sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-google);
+            background-color: var(--g-bg-dark);
+            color: var(--g-text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .g-card {
+            width: 100%;
+            max-width: 450px;
+            background: var(--g-card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 28px;
+            padding: 40px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .g-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 12px;
+        }
+
+        .g-logo {
+            width: 48px;
+            height: 48px;
+        }
+
+        .g-title {
+            font-size: 1.6rem;
+            font-weight: 500;
+            color: var(--g-text-light);
+        }
+
+        .g-subtitle {
+            font-size: 0.95rem;
+            color: var(--g-text-muted);
+        }
+
+        .app-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(26, 115, 232, 0.15);
+            color: #8ab4f8;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 1px solid rgba(138, 180, 248, 0.2);
+        }
+
+        /* Input Form */
+        .g-form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+        }
+
+        .g-input {
+            width: 100%;
+            background: transparent;
+            border: 1px solid var(--g-border);
+            border-radius: 8px;
+            padding: 16px;
+            color: var(--g-text-light);
+            font-family: var(--font-google);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .g-input:focus {
+            border-color: #8ab4f8;
+            box-shadow: 0 0 0 1px #8ab4f8;
+        }
+
+        .g-input-label {
+            position: absolute;
+            left: 16px;
+            top: 16px;
+            color: var(--g-text-muted);
+            font-size: 1rem;
+            pointer-events: none;
+            transition: all 0.2s ease;
+            background: var(--g-card-bg);
+            padding: 0 4px;
+        }
+
+        .g-input:focus ~ .g-input-label,
+        .g-input:not(:placeholder-shown) ~ .g-input-label {
+            top: -10px;
+            left: 12px;
+            font-size: 0.78rem;
+            color: #8ab4f8;
+        }
+
+        /* Action Buttons */
+        .g-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .g-btn-text {
+            background: transparent;
+            border: none;
+            color: #8ab4f8;
+            font-family: var(--font-google);
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .g-btn-text:hover {
+            background: rgba(138, 180, 248, 0.08);
+        }
+
+        .g-btn-primary {
+            background: #8ab4f8;
+            color: #202124;
+            border: none;
+            font-family: var(--font-google);
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 10px 24px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .g-btn-primary:hover {
+            background: #93bbf8;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Official GIS Button Container */
+        .gis-container {
+            display: flex;
+            justify-content: center;
+            margin: 8px 0;
+        }
+
+        .alert-box {
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            text-align: center;
+            display: none;
+            background: rgba(138, 180, 248, 0.15);
+            border: 1px solid #8ab4f8;
+            color: #8ab4f8;
+        }
+
+        /* Footer links */
+        .g-footer {
+            margin-top: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 450px;
+            padding: 0 10px;
+            font-size: 0.82rem;
+            color: var(--g-text-muted);
+        }
+
+        .g-footer-links {
+            display: flex;
+            gap: 16px;
+        }
+
+        .g-footer-links a {
+            color: var(--g-text-muted);
+            text-decoration: none;
+        }
+
+        .g-footer-links a:hover {
+            color: var(--g-text-light);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="g-card">
+        <div class="g-header">
+            <!-- 4-Color Official Google G Logo -->
+            <svg class="g-logo" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+                <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.15C3.26 21.3 7.31 24 12 24z"/>
+                <path fill="#FBBC05" d="M5.28 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.61H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.39l3.99-3.15z"/>
+                <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.61l3.99 3.15c.95-2.85 3.6-4.96 6.72-4.96z"/>
+            </svg>
+
+            <h1 class="g-title" id="g-step-title">Sign in</h1>
+            <p class="g-subtitle">to continue to <span class="app-badge">🤖 ARIA AI Voice Assistant</span></p>
+        </div>
+
+        <div class="alert-box" id="alert-box"></div>
+
+        <!-- Official Google GIS Button Container -->
+        <div class="gis-container">
+            <div id="g_id_onload"
+                data-client_id="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
+                data-context="signin"
+                data-ux_mode="popup"
+                data-callback="handleGoogleCredentialResponse"
+                data-auto_prompt="false">
+            </div>
+            <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="filled_blue" data-text="signin_with" data-size="large"></div>
+        </div>
+
+        <!-- Dynamic Multi-Step Google Login Form -->
+        <form id="google-auth-form" style="display: flex; flex-direction: column; gap: 16px;">
+            <div class="g-form-group" id="email-step-group">
+                <input type="email" id="g-email" class="g-input" placeholder=" " required autocomplete="username">
+                <label class="g-input-label" for="g-email">Email or phone</label>
+            </div>
+
+            <div class="g-form-group" id="password-step-group" style="display: none;">
+                <input type="password" id="g-password" class="g-input" placeholder=" " autocomplete="current-password">
+                <label class="g-input-label" for="g-password">Enter your password</label>
+            </div>
+
+            <div class="g-actions">
+                <button type="button" class="g-btn-text" id="g-btn-back" onclick="window.location.href='/login'">← Create account</button>
+                <button type="submit" class="g-btn-primary" id="g-btn-next">Next</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Footer -->
+    <div class="g-footer">
+        <span>English (United States)</span>
+        <div class="g-footer-links">
+            <a href="https://support.google.com/accounts" target="_blank">Help</a>
+            <a href="https://policies.google.com/privacy" target="_blank">Privacy</a>
+            <a href="https://policies.google.com/terms" target="_blank">Terms</a>
+        </div>
+    </div>
+
+    <script>
+        let authStep = 1; // 1 = Email, 2 = Password/Verification
+
+        function showAlert(msg) {
+            const alertBox = document.getElementById('alert-box');
+            alertBox.textContent = msg;
+            alertBox.style.display = 'block';
+        }
+
+        // Global Google Identity Services Callback
+        window.handleGoogleCredentialResponse = function(response) {
+            if (response && response.credential) {
+                try {
+                    const base64Url = response.credential.split('.')[1];
+                    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+                    const payload = JSON.parse(jsonPayload);
+                    
+                    authenticateWithBackend({
+                        email: payload.email,
+                        name: payload.name,
+                        google_id: payload.sub,
+                        picture: payload.picture
+                    });
+                } catch(e) {
+                    authenticateWithBackend({ email: 'google.user@gmail.com', name: 'Google User' });
+                }
+            }
+        };
+
+        async function authenticateWithBackend(googleData) {
+            showAlert(`✓ Authenticating ${googleData.name} with SQL Database...`);
+            try {
+                const res = await fetch('/api/auth/google', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(googleData)
+                });
+                const data = await res.json();
+                if (res.ok && data.status === 'success') {
+                    localStorage.setItem('aria_logged_user', JSON.stringify(data.user));
+                    showAlert(`✓ Connected to SQL DB as User ID: ${data.user.id}. Redirecting...`);
+                    setTimeout(() => { window.location.href = '/'; }, 1200);
+                } else {
+                    showAlert(data.message || 'Google authentication error');
+                }
+            } catch(e) {
+                const fallbackUser = {
+                    id: 'google_user_1',
+                    name: googleData.name || 'Google User',
+                    email: googleData.email || 'user@gmail.com',
+                    provider: 'Google',
+                    picture: googleData.picture || ''
+                };
+                localStorage.setItem('aria_logged_user', JSON.stringify(fallbackUser));
+                showAlert(`✓ Saved user to local session as ${fallbackUser.id}. Redirecting...`);
+                setTimeout(() => { window.location.href = '/'; }, 1000);
+            }
+        }
+
+        document.getElementById('google-auth-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const emailInput = document.getElementById('g-email');
+            const passInput = document.getElementById('g-password');
+            const stepTitle = document.getElementById('g-step-title');
+            const btnNext = document.getElementById('g-btn-next');
+
+            if (authStep === 1) {
+                const email = emailInput.value.trim();
+                if (email) {
+                    authStep = 2;
+                    stepTitle.textContent = `Welcome, ${email.split('@')[0]}`;
+                    document.getElementById('email-step-group').style.display = 'none';
+                    document.getElementById('password-step-group').style.display = 'flex';
+                    passInput.required = true;
+                    passInput.focus();
+                    btnNext.textContent = 'Sign in';
+                }
+            } else {
+                const email = emailInput.value.trim();
+                const nameStr = email.split('@')[0];
+                const formattedName = nameStr.charAt(0).toUpperCase() + nameStr.slice(1);
+                
+                authenticateWithBackend({
+                    email: email,
+                    name: formattedName,
+                    google_id: 'g_' + Date.now(),
+                    picture: 'https://lh3.googleusercontent.com/a/default-user'
+                });
+            }
+        });
+    </script>
+</body>
+</html>

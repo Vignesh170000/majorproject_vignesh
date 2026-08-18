@@ -359,34 +359,44 @@
         };
 
         async function authenticateWithBackend(googleData) {
-            showAlert(`✓ Authenticating ${googleData.name} with SQL Database...`);
-            try {
-                const res = await fetch('/api/auth/google', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(googleData)
-                });
-                const data = await res.json();
-                if (res.ok && data.status === 'success') {
-                    localStorage.setItem('aria_logged_user', JSON.stringify(data.user));
-                    showAlert(`✓ Connected to SQL DB as User ID: ${data.user.id}. Redirecting...`);
-                    setTimeout(() => { window.location.href = '/'; }, 1200);
-                } else {
-                    showAlert(data.message || 'Google authentication error');
-                }
-            } catch(e) {
-                const fallbackUser = {
-                    id: 'google_user_1',
-                    name: googleData.name || 'Google User',
-                    email: googleData.email || 'user@gmail.com',
-                    provider: 'Google',
-                    picture: googleData.picture || ''
-                };
-                localStorage.setItem('aria_logged_user', JSON.stringify(fallbackUser));
-                showAlert(`✓ Saved user to local session as ${fallbackUser.id}. Redirecting...`);
-                setTimeout(() => { window.location.href = '/'; }, 1000);
+            showAlert(`✓ Authenticating ${googleData.name}...`);
+            
+            // Try connecting to Flask Backend Server (relative path or local 5000 port)
+            const apiEndpoints = ['/api/auth/google', 'http://localhost:5000/api/auth/google'];
+            for (const endpoint of apiEndpoints) {
+                try {
+                    const res = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(googleData)
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.status === 'success') {
+                            localStorage.setItem('aria_logged_user', JSON.stringify(data.user));
+                            showAlert(`✓ Connected to SQL Database as User ID: ${data.user.id}. Redirecting...`);
+                            setTimeout(() => { window.location.href = window.location.pathname.includes('google_login.html') ? 'index.html' : '/'; }, 1000);
+                            return;
+                        }
+                    }
+                } catch(e) {}
             }
+
+            // Fallback for Static Published Site (assigns derived google_user_1, google_user_2, etc.)
+            let count = parseInt(localStorage.getItem('aria_google_user_count') || '0') + 1;
+            localStorage.setItem('aria_google_user_count', count);
+            const fallbackUser = {
+                id: `google_user_${count}`,
+                name: googleData.name || 'Google User',
+                email: googleData.email || 'user@gmail.com',
+                provider: 'Google',
+                picture: googleData.picture || 'https://lh3.googleusercontent.com/a/default-user'
+            };
+            localStorage.setItem('aria_logged_user', JSON.stringify(fallbackUser));
+            showAlert(`✓ Authenticated as ${fallbackUser.name} (${fallbackUser.id}). Redirecting...`);
+            setTimeout(() => { window.location.href = window.location.pathname.includes('google_login.html') ? 'index.html' : '/'; }, 1000);
         }
+
 
         document.getElementById('google-auth-form').addEventListener('submit', (e) => {
             e.preventDefault();

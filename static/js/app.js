@@ -633,39 +633,38 @@ document.addEventListener('DOMContentLoaded', () => {
             try { window.open('https://github.com', '_blank'); } catch(e) {}
         }
 
-        // Check if running on GitHub Pages or static host
-        if (window.location.hostname.includes('github.io')) {
-            await processCommandClientSide(cmdText);
-            return;
+        // Attempt fetch to relative /api/command OR local http://localhost:5000/api/command
+        const apiTargets = ['/api/command', 'http://localhost:5000/api/command'];
+        let handledByBackend = false;
+
+        for (const target of apiTargets) {
+            try {
+                const res = await fetch(target, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ command: cmdText, speak: true })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.status === 'success') {
+                        playChimeSuccess();
+                        displayResponseCard(data.action || 'response', data.response, data.details);
+                        appendLog('assistant', `🤖 ${data.response}`);
+                        speakResponse(data.response);
+                        handledByBackend = true;
+                        break;
+                    }
+                }
+            } catch (err) {}
         }
 
-        try {
-            const res = await fetch('/api/command', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ command: cmdText, speak: true })
-            });
-
-            if (!res.ok) {
-                throw new Error(`HTTP ${res.status}`);
-            }
-
-            const data = await res.json();
-            if (data.status === 'success') {
-                playChimeSuccess();
-                displayResponseCard(data.action || 'response', data.response, data.details);
-                appendLog('assistant', `🤖 ${data.response}`);
-                speakResponse(data.response);
-            } else {
-                displayResponseCard('Error', data.response || 'Could not process command.');
-                appendLog('assistant', `⚠️ ${data.response}`);
-                updateStatus('Ready for command', 'ready');
-            }
-        } catch (err) {
-            console.warn('Backend server API unavailable. Falling back to Client-Side Web Engine...', err);
+        if (!handledByBackend) {
+            console.log('Using Client-Side AI Engine & Local Storage for published site execution...');
             await processCommandClientSide(cmdText);
         }
     }
+
 
     // Server-Side Microphone Listener Fallback
     async function triggerServerMicListen() {

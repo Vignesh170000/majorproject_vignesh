@@ -140,6 +140,26 @@ def init_db():
 
 init_db()
 
+def get_or_create_derived_user_id(cursor, provider, email=None):
+    """
+    Generates or retrieves a derived user ID starting from 1 for each provider
+    e.g. google_user_1, google_user_2, email_user_1, github_user_1, etc.
+    """
+    if email:
+        cursor.execute('SELECT id FROM users WHERE LOWER(email) = LOWER(?)', (email.strip().lower(),))
+        row = cursor.fetchone()
+        if row and row[0]:
+            return row[0]
+    
+    clean_provider = provider.lower().replace(' ', '_').replace('id', '').strip('_')
+    if not clean_provider:
+        clean_provider = 'user'
+        
+    cursor.execute('SELECT COUNT(*) FROM users WHERE LOWER(provider) = LOWER(?)', (provider.strip().lower(),))
+    count = cursor.fetchone()[0]
+    next_num = count + 1
+    return f"{clean_provider}_user_{next_num}"
+
 @app.route('/api/auth/register', methods=['POST'])
 def api_auth_register():
     data = request.json or {}
@@ -157,14 +177,14 @@ def api_auth_register():
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
         
-        cursor.execute('SELECT id FROM users WHERE email = ?', (email,))
+        cursor.execute('SELECT id FROM users WHERE LOWER(email) = ?', (email,))
         if cursor.fetchone():
             conn.close()
             return jsonify({'status': 'error', 'message': 'An account with this email already exists'}), 400
 
-        user_id = f"usr_{uuid.uuid4().hex[:12]}"
-        password_hash = generate_password_hash(password)
         provider = 'Email'
+        user_id = get_or_create_derived_user_id(cursor, provider, email)
+        password_hash = generate_password_hash(password)
 
         cursor.execute('''
             INSERT INTO users (id, name, email, password_hash, provider, picture)
@@ -199,7 +219,7 @@ def api_auth_email_login():
     try:
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
-        cursor.execute('SELECT id, name, email, password_hash, provider, picture FROM users WHERE email = ?', (email,))
+        cursor.execute('SELECT id, name, email, password_hash, provider, picture FROM users WHERE LOWER(email) = ?', (email,))
         user_row = cursor.fetchone()
 
         if not user_row:
@@ -245,7 +265,7 @@ def api_auth_google():
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
         
-        cursor.execute('SELECT id, name FROM users WHERE email = ?', (email,))
+        cursor.execute('SELECT id, name FROM users WHERE LOWER(email) = ?', (email,))
         row = cursor.fetchone()
 
         if row:
@@ -254,7 +274,7 @@ def api_auth_google():
                 UPDATE users SET name = ?, provider = ?, picture = ?, last_login = CURRENT_TIMESTAMP WHERE id = ?
             ''', (name, provider, picture, user_id))
         else:
-            user_id = f"google_{google_id}"
+            user_id = get_or_create_derived_user_id(cursor, provider, email)
             cursor.execute('''
                 INSERT INTO users (id, name, email, provider, picture)
                 VALUES (?, ?, ?, ?, ?)
@@ -279,20 +299,25 @@ def api_auth_google():
 @app.route('/api/auth/login', methods=['POST'])
 def api_auth_login():
     data = request.json or {}
-    provider = data.get('provider', 'Email')
+    provider = data.get('provider', 'Email').strip()
     email = data.get('email', 'user@example.com').strip().lower()
     name = data.get('name', email.split('@')[0].capitalize())
-    user_id = f"{provider.lower()}_{int(time.time())}"
 
     try:
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
-        cursor.execute('INSERT OR REPLACE INTO users (id, name, email, provider) VALUES (?, ?, ?, ?)',
-                       (user_id, name, email, provider))
+        
+        user_id = get_or_create_derived_user_id(cursor, provider, email)
+        
+        cursor.execute('''
+            INSERT INTO users (id, name, email, provider) VALUES (?, ?, ?, ?)
+            ON CONFLICT(email) DO UPDATE SET name = excluded.name, provider = excluded.provider, last_login = CURRENT_TIMESTAMP
+        ''', (user_id, name, email, provider))
         conn.commit()
         conn.close()
     except Exception as e:
         print("DB user save notice:", e)
+        user_id = f"{provider.lower()}_user_1"
 
     return jsonify({
         'status': 'success',
@@ -307,16 +332,19 @@ def api_auth_login():
 @app.route('/api/db/user', methods=['POST'])
 def api_db_user():
     data = request.json or {}
-    user_id = data.get('id', 'guest_user')
+    provider = data.get('provider', 'Guest').strip()
+    email = data.get('email', 'guest@aria.ai').strip().lower()
     name = data.get('name', 'Guest')
-    email = data.get('email', 'guest@aria.ai')
-    provider = data.get('provider', 'Guest')
     
     try:
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
-        cursor.execute('INSERT OR REPLACE INTO users (id, name, email, provider) VALUES (?, ?, ?, ?)',
-                       (user_id, name, email, provider))
+        user_id = get_or_create_derived_user_id(cursor, provider, email)
+        
+        cursor.execute('''
+            INSERT INTO users (id, name, email, provider) VALUES (?, ?, ?, ?)
+            ON CONFLICT(email) DO UPDATE SET name = excluded.name, provider = excluded.provider, last_login = CURRENT_TIMESTAMP
+        ''', (user_id, name, email, provider))
         conn.commit()
         conn.close()
         return jsonify({'status': 'success', 'user': {'id': user_id, 'name': name, 'email': email, 'provider': provider}})
@@ -325,7 +353,7 @@ def api_db_user():
 
 @app.route('/api/db/history', methods=['GET', 'POST', 'DELETE'])
 def api_db_history():
-    user_id = request.args.get('user_id', 'guest_user')
+    user_id = request.args.get('user_id', 'guest_user_1')
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
 
@@ -364,4 +392,5 @@ def api_history():
 if __name__ == '__main__':
     print("🚀 Starting AI Voice Assistant Web Interface on http://localhost:5000")
     app.run(host='0.0.0.0', port=5000, debug=False, use_reloader=False)
+
 

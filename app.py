@@ -103,9 +103,21 @@ import uuid
 import time
 from werkzeug.security import generate_password_hash, check_password_hash
 
-DB_FILE = os.path.join(os.path.dirname(__file__), 'database.db')
+DB_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_FILE = os.path.join(DB_DIR, 'database.db')
+
+try:
+    test_file = os.path.join(DB_DIR, '.writable_test')
+    with open(test_file, 'w') as f:
+        f.write('1')
+    if os.path.exists(test_file):
+        os.remove(test_file)
+except Exception:
+    import tempfile
+    DB_FILE = os.path.join(tempfile.gettempdir(), 'database.db')
 
 def init_db():
+
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
     cursor.execute('''

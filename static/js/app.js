@@ -610,10 +610,21 @@ document.addEventListener('DOMContentLoaded', () => {
         speakResponse(responseText);
     }
 
+    // Global Quick Command Chip Handler
+    window.quickCommand = function(text) {
+        if (!text) return;
+        if (commandInput) {
+            commandInput.value = text;
+        }
+        appendLog('user', `🗣️ ${text}`);
+        processCommand(text);
+    };
+
     // --------------------------------------------------
     // 6. Command Execution API Handler
     // --------------------------------------------------
     async function processCommand(cmdText) {
+
         if (!cmdText.trim()) return;
 
         updateStatus('Processing command...', 'ready');

@@ -676,12 +676,29 @@
                 <span id="status-text">Click the microphone or type below to issue a command</span>
             </div>
 
+            <!-- File / Image Attachment Preview Strip -->
+            <div id="file-preview-bar" style="display: none; width: 100%; max-width: 720px; background: rgba(0, 242, 254, 0.08); border: 1px dashed var(--accent-cyan); border-radius: var(--radius-md); padding: 10px 16px; margin-bottom: 12px; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 12px; overflow: hidden;">
+                    <img id="file-preview-img" style="display: none; width: 38px; height: 38px; border-radius: 6px; object-fit: cover; border: 1px solid var(--accent-cyan);">
+                    <span id="file-preview-icon" style="font-size: 1.4rem;">📄</span>
+                    <div style="display: flex; flex-direction: column; min-width: 0;">
+                        <span id="file-preview-name" style="font-size: 0.88rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">filename.png</span>
+                        <span id="file-preview-info" style="font-size: 0.75rem; color: var(--text-muted);">Image File &bull; Ready for Analysis</span>
+                    </div>
+                </div>
+                <button id="file-preview-remove" style="background: transparent; border: none; color: var(--text-muted); font-size: 1.3rem; cursor: pointer;" title="Remove Attachment">&times;</button>
+            </div>
+
             <!-- Console Input -->
             <div class="input-bar">
                 <button class="btn-action-mic" id="btn-mic-toggle" title="Toggle Voice Recognition">
                     <svg viewBox="0 0 24 24" id="mic-icon-svg"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
                 </button>
-                <input type="text" id="command-input" placeholder="Ask anything... (e.g. 'What is the time?', 'Search Wikipedia for AI', 'Open Notepad')" autocomplete="off">
+                <input type="text" id="command-input" placeholder="Ask anything, search images, or attach documents..." autocomplete="off">
+                <button class="btn-action-attach" id="btn-file-upload-trigger" title="Upload Image / Document / File for Analysis" style="width: 44px; height: 44px; border-radius: 50%; border: none; background: rgba(255, 255, 255, 0.08); color: var(--accent-cyan); cursor: pointer; display: flex; align-items: center; justify-content: center; margin-right: 4px; transition: all 0.25s ease;">
+                    <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: var(--accent-cyan);"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4s-4 1.79-4 4v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>
+                </button>
+                <input type="file" id="file-upload-input" style="display: none;" accept="image/*,.pdf,.txt,.docx,.csv,.json,.md,.js,.py,*">
                 <button class="btn-action-send" id="btn-send" title="Send Command">
                     <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                 </button>
@@ -691,7 +708,7 @@
             <div class="hero-response-card" id="hero-response-box" style="width: 100%; max-width: 720px; margin-top: 24px; background: rgba(0, 0, 0, 0.4); border-left: 4px solid var(--accent-cyan); border-radius: var(--radius-md); padding: 18px 22px; display: flex; flex-direction: column; gap: 8px;">
                 <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent-cyan); font-weight: 700;" id="hero-category">LATEST RESULT</div>
                 <div style="font-size: 1.05rem; line-height: 1.6; color: var(--text-primary);" id="hero-response-text">
-                    Ask a question or click a command above to view instant AI search results here.
+                    Ask a question, upload an image, or inspect a document to view instant AI analysis here.
                 </div>
             </div>
         </main>
@@ -702,7 +719,7 @@
             <section class="section-card">
                 <h2 class="section-title">
                     <svg viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
-                    Interactive Command Shortcuts
+                    Interactive Command & File Shortcuts
                 </h2>
                 <div class="chips-wrapper">
                     <button class="chip-btn" id="chip-btn-auth" style="background: rgba(0, 242, 254, 0.15); border-color: var(--accent-cyan); color: var(--accent-cyan); font-weight: 700;">
@@ -713,6 +730,15 @@
                         <svg viewBox="0 0 24 24" style="fill:var(--accent-purple);"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
                         📜 Saved Chat History
                     </button>
+                    <button class="chip-btn" id="chip-btn-image-search" style="background: rgba(0, 242, 254, 0.15); border-color: var(--accent-cyan); color: #fff; font-weight: 700;">
+                        <svg viewBox="0 0 24 24" style="fill:var(--accent-cyan);"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+                        📷 Upload & Search Image
+                    </button>
+                    <button class="chip-btn" id="chip-btn-doc-analyze" style="background: rgba(127, 0, 255, 0.18); border-color: var(--accent-purple); color: #fff; font-weight: 700;">
+                        <svg viewBox="0 0 24 24" style="fill:var(--accent-purple);"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                        📄 Documents & File Analyzer
+                    </button>
+
                     <button class="chip-btn" data-cmd="What is the current time?">
                         <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
                         Current Time
@@ -961,8 +987,9 @@
     </div>
 
     <!-- Application Script -->
-    <script src="{{ url_for('static', filename='js/app.js') }}?v=509"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}?v=510"></script>
 </body>
 </html>
+
 
 

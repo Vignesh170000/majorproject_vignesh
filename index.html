@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARIA - AI Voice Assistant Control Center</title>
+    <title>ARIA - Cyberpunk AI Voice Control Center</title>
     <meta name="description" content="AI-Based Voice Assistant featuring real-time speech recognition, natural language processing, audio synthesis, and automated action execution.">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
@@ -27,16 +27,17 @@
     <!-- Embedded Guaranteed Design System & Stylesheet -->
     <style>
         :root {
-            --bg-dark: #000000;
-            --card-bg: rgba(12, 14, 24, 0.92);
-            --card-border: rgba(255, 255, 255, 0.12);
+            --bg-dark: #030712;
+            --card-bg: rgba(7, 12, 23, 0.92);
+            --card-border: rgba(0, 242, 254, 0.25);
             --accent-cyan: #00f2fe;
-            --accent-blue: #4facfe;
-            --accent-purple: #7f00ff;
-            --accent-pink: #f5576c;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-pink: #f43f5e;
+            --accent-green: #10b981;
             --text-primary: #ffffff;
-            --text-secondary: #a1a1aa;
-            --text-muted: #71717a;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
@@ -51,14 +52,15 @@
 
         body {
             font-family: var(--font-main);
-            background-color: #000000;
+            background-color: #030712;
             color: var(--text-primary);
             min-height: 100vh;
             overflow-x: hidden;
             position: relative;
             background-image: 
-                radial-gradient(circle at 15% 15%, rgba(0, 242, 254, 0.12) 0%, transparent 40%),
-                radial-gradient(circle at 85% 85%, rgba(127, 0, 255, 0.12) 0%, transparent 40%);
+                radial-gradient(circle at 10% 10%, rgba(0, 242, 254, 0.18) 0%, transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(16, 185, 129, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(244, 63, 94, 0.1) 0%, transparent 50%);
             background-attachment: fixed;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
@@ -84,7 +86,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            box-shadow: 0 10px 30px rgba(0, 242, 254, 0.15);
         }
 
         .brand {
@@ -97,11 +99,11 @@
             width: 48px;
             height: 48px;
             border-radius: 14px;
-            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-green));
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.5);
         }
 
         .brand-icon-wrapper svg {
@@ -123,7 +125,7 @@
         .badge {
             font-size: 0.65rem;
             padding: 4px 10px;
-            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-pink));
             border-radius: 20px;
             font-weight: 700;
             letter-spacing: 1px;
@@ -146,10 +148,10 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(0, 242, 254, 0.06);
             padding: 8px 16px;
             border-radius: var(--radius-md);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(0, 242, 254, 0.2);
             font-size: 0.85rem;
             color: var(--text-secondary);
         }
@@ -172,7 +174,7 @@
             flex-direction: column;
             align-items: center;
             position: relative;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+            box-shadow: 0 15px 40px rgba(0, 242, 254, 0.15);
         }
 
         .orb-container {
@@ -190,8 +192,8 @@
             width: 120px;
             height: 120px;
             border-radius: 50%;
-            background: radial-gradient(circle at 35% 35%, var(--accent-cyan), var(--accent-purple) 70%, var(--bg-dark));
-            box-shadow: 0 0 45px var(--accent-cyan), inset 0 0 25px rgba(255, 255, 255, 0.6);
+            background: radial-gradient(circle at 35% 35%, var(--accent-cyan), var(--accent-green) 70%, var(--bg-dark));
+            box-shadow: 0 0 50px var(--accent-cyan), inset 0 0 25px rgba(255, 255, 255, 0.8);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -207,7 +209,7 @@
 
         .glowing-orb:hover {
             transform: scale(1.08);
-            box-shadow: 0 0 60px var(--accent-cyan), inset 0 0 35px rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 70px var(--accent-cyan), inset 0 0 35px rgba(255, 255, 255, 0.9);
         }
 
         .pulse-ring {
@@ -250,10 +252,10 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(0, 242, 254, 0.06);
             padding: 8px 20px;
             border-radius: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(0, 242, 254, 0.2);
             margin-bottom: 28px;
             font-size: 0.95rem;
             color: var(--text-secondary);
@@ -263,13 +265,13 @@
             width: 10px;
             height: 10px;
             border-radius: 50%;
-            background-color: var(--success);
-            box-shadow: 0 0 10px var(--success);
+            background-color: var(--accent-green);
+            box-shadow: 0 0 12px var(--accent-green);
         }
 
         .status-dot.listening {
             background-color: var(--accent-pink);
-            box-shadow: 0 0 12px var(--accent-pink);
+            box-shadow: 0 0 14px var(--accent-pink);
             animation: blinkDot 0.8s infinite alternate;
         }
 
@@ -281,17 +283,16 @@
             max-width: 720px;
             display: flex;
             align-items: center;
-            background: rgba(8, 12, 24, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(3, 7, 18, 0.95);
+            border: 1px solid var(--accent-cyan);
             border-radius: 50px;
             padding: 6px 8px 6px 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 10px 30px rgba(0, 242, 254, 0.25);
             transition: all 0.3s ease;
         }
 
         .input-bar:focus-within {
-            border-color: var(--accent-cyan);
-            box-shadow: 0 0 25px rgba(0, 242, 254, 0.35);
+            box-shadow: 0 0 35px rgba(0, 242, 254, 0.5);
         }
 
         .btn-action-mic {
@@ -299,7 +300,7 @@
             height: 48px;
             border-radius: 50%;
             border: none;
-            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-green));
             color: #ffffff;
             cursor: pointer;
             display: flex;
@@ -338,7 +339,7 @@
             height: 46px;
             border-radius: 50%;
             border: none;
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(0, 242, 254, 0.1);
             color: var(--accent-cyan);
             cursor: pointer;
             display: flex;
@@ -374,7 +375,7 @@
             padding: 24px;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            box-shadow: 0 10px 30px rgba(0, 242, 254, 0.15);
         }
 
         .section-title {
@@ -387,7 +388,7 @@
             gap: 10px;
             margin-bottom: 18px;
             padding-bottom: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 1px solid rgba(0, 242, 254, 0.15);
         }
 
         .section-title svg {
@@ -407,7 +408,7 @@
         }
 
         .log-item {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(0, 242, 254, 0.04);
             border-left: 3px solid var(--accent-cyan);
             border-radius: 0 var(--radius-md) var(--radius-md) 0;
             padding: 12px 16px;
@@ -417,17 +418,17 @@
 
         .log-item.user {
             border-left-color: var(--accent-purple);
-            background: rgba(127, 0, 255, 0.08);
+            background: rgba(139, 92, 246, 0.1);
         }
 
         .log-item.assistant {
             border-left-color: var(--accent-cyan);
-            background: rgba(0, 242, 254, 0.08);
+            background: rgba(0, 242, 254, 0.1);
         }
 
         .log-item.system {
-            border-left-color: var(--warning);
-            background: rgba(245, 158, 11, 0.08);
+            border-left-color: var(--accent-green);
+            background: rgba(16, 185, 129, 0.1);
         }
 
         .log-time {
@@ -443,7 +444,7 @@
 
         /* Response Preview Panel */
         .response-card {
-            background: linear-gradient(135deg, rgba(0, 242, 254, 0.1), rgba(127, 0, 255, 0.15));
+            background: linear-gradient(135deg, rgba(0, 242, 254, 0.12), rgba(16, 185, 129, 0.12));
             border: 1px solid var(--card-border);
             border-radius: var(--radius-md);
             padding: 20px;
@@ -458,7 +459,7 @@
             font-size: 0.72rem;
             padding: 4px 12px;
             border-radius: 12px;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(0, 242, 254, 0.2);
             color: var(--accent-cyan);
             font-weight: 700;
             text-transform: uppercase;
@@ -482,8 +483,8 @@
         }
 
         .chip {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 242, 254, 0.06);
+            border: 1px solid rgba(0, 242, 254, 0.2);
             color: var(--text-secondary);
             padding: 7px 14px;
             border-radius: 20px;
@@ -495,8 +496,9 @@
         .chip:hover {
             background: var(--accent-cyan);
             color: var(--bg-dark);
-            font-weight: 600;
+            font-weight: 700;
             transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4);
         }
 
         /* System Gauges */
@@ -508,8 +510,8 @@
         }
 
         .gauge-box {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(0, 242, 254, 0.04);
+            border: 1px solid rgba(0, 242, 254, 0.15);
             border-radius: var(--radius-md);
             padding: 12px;
         }
@@ -533,7 +535,7 @@
         .bar-inner {
             height: 100%;
             width: 0%;
-            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green));
             transition: width 0.5s ease;
         }
 
@@ -541,7 +543,7 @@
             display: inline-flex !important;
             align-items: center !important;
             gap: 8px !important;
-            background: linear-gradient(135deg, #00f2fe, #7f00ff) !important;
+            background: linear-gradient(135deg, #00f2fe, #10b981) !important;
             color: #ffffff !important;
             padding: 10px 18px !important;
             border-radius: 30px !important;
@@ -559,16 +561,16 @@
 
         /* Dynamic Light / Dark Theme Mode */
         body.light-theme {
-            --bg-dark: #ffffff;
-            --card-bg: rgba(248, 250, 252, 0.96);
-            --card-border: rgba(0, 51, 102, 0.15);
+            --bg-dark: #f8fafc;
+            --card-bg: rgba(255, 255, 255, 0.96);
+            --card-border: rgba(0, 242, 254, 0.35);
             --text-primary: #0f172a;
             --text-secondary: #334155;
             --text-muted: #64748b;
-            background-color: #ffffff;
+            background-color: #f8fafc;
             background-image: 
-                radial-gradient(circle at 15% 15%, rgba(0, 242, 254, 0.15) 0%, transparent 45%),
-                radial-gradient(circle at 85% 85%, rgba(127, 0, 255, 0.15) 0%, transparent 45%);
+                radial-gradient(circle at 10% 10%, rgba(0, 242, 254, 0.15) 0%, transparent 45%),
+                radial-gradient(circle at 90% 90%, rgba(16, 185, 129, 0.15) 0%, transparent 45%);
         }
 
         body.light-theme .top-nav,
@@ -620,15 +622,15 @@
                     <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.2 19.57 10.55 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
                 </div>
                 <div class="brand-text">
-                    <h1>ARIA <span class="badge">AI VOICE ASSISTANT</span></h1>
+                    <h1>ARIA <span class="badge">CYBERPUNK NEON</span></h1>
                     <p class="subtitle">Speech Recognition, NLP & System Automation Engine</p>
                 </div>
             </div>
 
             <div class="status-widgets">
-                <div class="widget" id="btn-toggle-theme" style="cursor: pointer; background: rgba(0, 242, 254, 0.1); border-color: rgba(0, 242, 254, 0.25);" title="Switch Light/Dark Theme">
-                    <span id="theme-icon">☀️</span>
-                    <span id="theme-label">Light Mode</span>
+                <div class="widget" id="btn-toggle-theme" style="cursor: pointer; background: rgba(0, 242, 254, 0.12); border-color: rgba(0, 242, 254, 0.35);" title="Switch Light/Dark Theme">
+                    <span id="theme-icon">🚀</span>
+                    <span id="theme-label">Cyber Neon</span>
                 </div>
                 <div class="widget" id="btn-toggle-history" style="cursor: pointer;" title="View Chat History & Saved Sessions">
                     <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
@@ -712,9 +714,9 @@
                     <span>Assistant Live Response</span>
                 </div>
                 <div class="response-card" id="response-card">
-                    <div class="response-category-badge" id="response-category">System Ready</div>
+                    <div class="response-category-badge" id="response-category">Cyberpunk Ready</div>
                     <div class="response-text" id="response-text-content">
-                        "Hello! I am ARIA, your AI Voice Assistant. You can click the glowing orb or microphone to speak, upload an image or document, or type below!"
+                        "Welcome to ARIA Cyberpunk Control Center! Speak a command, upload an image or document, or type below."
                     </div>
                 </div>
 
@@ -722,7 +724,7 @@
                     <div style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; margin-bottom: 8px;">Try Speaking Quick Commands or File Analysis:</div>
                     <div class="quick-chips">
                         <div class="chip" id="chip-btn-image-search" style="background: rgba(0, 242, 254, 0.15); border-color: var(--accent-cyan); color: #fff; font-weight: 700;">📷 Upload & Search Image</div>
-                        <div class="chip" id="chip-btn-doc-analyze" style="background: rgba(127, 0, 255, 0.18); border-color: var(--accent-purple); color: #fff; font-weight: 700;">📄 Documents & File Analyzer</div>
+                        <div class="chip" id="chip-btn-doc-analyze" style="background: rgba(16, 185, 129, 0.18); border-color: var(--accent-green); color: #fff; font-weight: 700;">📄 Documents & File Analyzer</div>
                         <div class="chip" onclick="quickCommand('what is the current time?')">🕒 What time is it?</div>
                         <div class="chip" onclick="quickCommand('show system status')">📊 System Status</div>
                         <div class="chip" onclick="quickCommand('calculate 12 times 8')">🧮 Calculate 12 * 8</div>
@@ -743,8 +745,8 @@
                 
                 <div class="log-stream" id="log-stream">
                     <div class="log-item system">
-                        <div class="log-time">System Startup</div>
-                        <div>🚀 ARIA AI Engine & Web Control Center initialized successfully.</div>
+                        <div class="log-time">Cyberpunk Matrix Startup</div>
+                        <div>🚀 ARIA Cyberpunk Neon Matrix Engine & Web Control Center initialized successfully.</div>
                     </div>
                 </div>
 
@@ -774,7 +776,7 @@
 
         <!-- Built-in Interactive Notepad Modal -->
         <div id="notepad-modal" class="auth-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px); z-index: 10000; align-items: center; justify-content: center; padding: 20px;">
-            <div class="auth-window" style="width: 100%; max-width: 650px; background: rgba(12, 14, 24, 0.98); border: 1px solid var(--accent-cyan); border-radius: var(--radius-lg); box-shadow: 0 0 50px rgba(0, 242, 254, 0.35); display: flex; flex-direction: column; overflow: hidden;">
+            <div class="auth-window" style="width: 100%; max-width: 650px; background: rgba(7, 12, 23, 0.98); border: 1px solid var(--accent-cyan); border-radius: var(--radius-lg); box-shadow: 0 0 50px rgba(0, 242, 254, 0.35); display: flex; flex-direction: column; overflow: hidden;">
                 <div style="background: rgba(0, 0, 0, 0.6); padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
                     <div style="display: flex; align-items: center; gap: 10px; font-family: var(--font-heading); font-size: 1.15rem; font-weight: 700; color: var(--accent-cyan);">
                         <svg viewBox="0 0 24 24" style="width:22px; height:22px; fill:var(--accent-cyan);"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
@@ -783,7 +785,7 @@
                     <button id="btn-notepad-close" style="background: transparent; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer;" title="Close Window">&times;</button>
                 </div>
                 <div style="padding: 20px; display: flex; flex-direction: column; gap: 14px;">
-                    <textarea id="notepad-editor" placeholder="Type your quick notes, meeting minutes, or ideas here..." style="width: 100%; height: 260px; background: rgba(0, 0, 0, 0.9); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: var(--radius-md); padding: 16px; color: #fff; font-family: var(--font-main); font-size: 1rem; outline: none; resize: vertical;"></textarea>
+                    <textarea id="notepad-editor" placeholder="Type your quick notes, meeting minutes, or ideas here..." style="width: 100%; height: 260px; background: rgba(3, 7, 18, 0.95); border: 1px solid rgba(0, 242, 254, 0.25); border-radius: var(--radius-md); padding: 16px; color: #fff; font-family: var(--font-main); font-size: 1rem; outline: none; resize: vertical;"></textarea>
                     <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
                         <div style="font-size: 0.85rem; color: var(--text-secondary);">
                             Words: <span id="notepad-word-count" style="color: var(--accent-cyan); font-weight: 700;">0</span> | 
@@ -801,7 +803,7 @@
 
         <!-- Built-in Interactive Calculator Modal -->
         <div id="calculator-modal" class="auth-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px); z-index: 10000; align-items: center; justify-content: center; padding: 20px;">
-            <div class="auth-window" style="width: 100%; max-width: 360px; background: rgba(12, 14, 24, 0.98); border: 1px solid var(--accent-cyan); border-radius: var(--radius-lg); box-shadow: 0 0 50px rgba(0, 242, 254, 0.35); display: flex; flex-direction: column; overflow: hidden;">
+            <div class="auth-window" style="width: 100%; max-width: 360px; background: rgba(7, 12, 23, 0.98); border: 1px solid var(--accent-cyan); border-radius: var(--radius-lg); box-shadow: 0 0 50px rgba(0, 242, 254, 0.35); display: flex; flex-direction: column; overflow: hidden;">
                 <div style="background: rgba(0, 0, 0, 0.6); padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
                     <div style="display: flex; align-items: center; gap: 10px; font-family: var(--font-heading); font-size: 1.1rem; font-weight: 700; color: var(--accent-cyan);">
                         <svg viewBox="0 0 24 24" style="width:20px; height:20px; fill:var(--accent-cyan);"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
@@ -810,23 +812,23 @@
                     <button id="btn-calc-close" style="background: transparent; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer;" title="Close Window">&times;</button>
                 </div>
                 <div style="padding: 20px; display: flex; flex-direction: column; gap: 14px;">
-                    <div id="calc-display" style="width: 100%; background: rgba(0, 0, 0, 0.9); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: var(--radius-md); padding: 16px; color: var(--accent-cyan); font-family: var(--font-heading); font-size: 1.8rem; font-weight: 700; text-align: right; overflow-x: auto; min-height: 64px;">0</div>
+                    <div id="calc-display" style="width: 100%; background: rgba(3, 7, 18, 0.95); border: 1px solid rgba(0, 242, 254, 0.25); border-radius: var(--radius-md); padding: 16px; color: var(--accent-cyan); font-family: var(--font-heading); font-size: 1.8rem; font-weight: 700; text-align: right; overflow-x: auto; min-height: 64px;">0</div>
                     
                     <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
                         <button class="calc-btn calc-clear" data-val="C" style="background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); padding: 14px; border-radius: 10px; font-size: 1.1rem; font-weight: 700; cursor: pointer;">C</button>
-                        <button class="calc-btn calc-op" data-val="/" style="background: rgba(127, 0, 255, 0.25); color: var(--accent-purple); border: 1px solid var(--accent-purple); padding: 14px; border-radius: 10px; font-size: 1.2rem; font-weight: 700; cursor: pointer;">÷</button>
-                        <button class="calc-btn calc-op" data-val="*" style="background: rgba(127, 0, 255, 0.25); color: var(--accent-purple); border: 1px solid var(--accent-purple); padding: 14px; border-radius: 10px; font-size: 1.2rem; font-weight: 700; cursor: pointer;">×</button>
+                        <button class="calc-btn calc-op" data-val="/" style="background: rgba(139, 92, 246, 0.25); color: var(--accent-purple); border: 1px solid var(--accent-purple); padding: 14px; border-radius: 10px; font-size: 1.2rem; font-weight: 700; cursor: pointer;">÷</button>
+                        <button class="calc-btn calc-op" data-val="*" style="background: rgba(139, 92, 246, 0.25); color: var(--accent-purple); border: 1px solid var(--accent-purple); padding: 14px; border-radius: 10px; font-size: 1.2rem; font-weight: 700; cursor: pointer;">×</button>
                         <button class="calc-btn calc-back" data-val="back" style="background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid rgba(255, 255, 255, 0.15); padding: 14px; border-radius: 10px; font-size: 1.1rem; font-weight: 700; cursor: pointer;">⌫</button>
                         
                         <button class="calc-btn calc-num" data-val="7" style="background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid rgba(255, 255, 255, 0.08); padding: 14px; border-radius: 10px; font-size: 1.2rem; font-weight: 600; cursor: pointer;">7</button>
                         <button class="calc-btn calc-num" data-val="8" style="background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid rgba(255, 255, 255, 0.08); padding: 14px; border-radius: 10px; font-size: 1.2rem; font-weight: 600; cursor: pointer;">8</button>
                         <button class="calc-btn calc-num" data-val="9" style="background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid rgba(255, 255, 255, 0.08); padding: 14px; border-radius: 10px; font-size: 1.2rem; font-weight: 600; cursor: pointer;">9</button>
-                        <button class="calc-btn calc-op" data-val="-" style="background: rgba(127, 0, 255, 0.25); color: var(--accent-purple); border: 1px solid var(--accent-purple); padding: 14px; border-radius: 10px; font-size: 1.2rem; font-weight: 700; cursor: pointer;">-</button>
+                        <button class="calc-btn calc-op" data-val="-" style="background: rgba(139, 92, 246, 0.25); color: var(--accent-purple); border: 1px solid var(--accent-purple); padding: 14px; border-radius: 10px; font-size: 1.2rem; font-weight: 700; cursor: pointer;">-</button>
                         
                         <button class="calc-btn calc-num" data-val="4" style="background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid rgba(255, 255, 255, 0.08); padding: 14px; border-radius: 10px; font-size: 1.2rem; font-weight: 600; cursor: pointer;">4</button>
                         <button class="calc-btn calc-num" data-val="5" style="background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid rgba(255, 255, 255, 0.08); padding: 14px; border-radius: 10px; font-size: 1.2rem; font-weight: 600; cursor: pointer;">5</button>
                         <button class="calc-btn calc-num" data-val="6" style="background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid rgba(255, 255, 255, 0.08); padding: 14px; border-radius: 10px; font-size: 1.2rem; font-weight: 600; cursor: pointer;">6</button>
-                        <button class="calc-btn calc-op" data-val="+" style="background: rgba(127, 0, 255, 0.25); color: var(--accent-purple); border: 1px solid var(--accent-purple); padding: 14px; border-radius: 10px; font-size: 1.2rem; font-weight: 700; cursor: pointer;">+</button>
+                        <button class="calc-btn calc-op" data-val="+" style="background: rgba(139, 92, 246, 0.25); color: var(--accent-purple); border: 1px solid var(--accent-purple); padding: 14px; border-radius: 10px; font-size: 1.2rem; font-weight: 700; cursor: pointer;">+</button>
                         
                         <button class="calc-btn calc-num" data-val="1" style="background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid rgba(255, 255, 255, 0.08); padding: 14px; border-radius: 10px; font-size: 1.2rem; font-weight: 600; cursor: pointer;">1</button>
                         <button class="calc-btn calc-num" data-val="2" style="background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid rgba(255, 255, 255, 0.08); padding: 14px; border-radius: 10px; font-size: 1.2rem; font-weight: 600; cursor: pointer;">2</button>
@@ -842,7 +844,7 @@
 
         <!-- Chat History & Saved Sessions Drawer Sidebar -->
         <div id="history-drawer" class="history-drawer-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(6px); z-index: 9990; justify-content: flex-end;">
-            <div class="history-panel" style="width: 100%; max-width: 420px; height: 100%; background: rgba(12, 14, 24, 0.98); border-left: 1px solid var(--accent-cyan); box-shadow: -10px 0 40px rgba(0, 0, 0, 0.8); display: flex; flex-direction: column; overflow: hidden;">
+            <div class="history-panel" style="width: 100%; max-width: 420px; height: 100%; background: rgba(7, 12, 23, 0.98); border-left: 1px solid var(--accent-cyan); box-shadow: -10px 0 40px rgba(0, 0, 0, 0.8); display: flex; flex-direction: column; overflow: hidden;">
                 <!-- Drawer Header -->
                 <div style="background: rgba(0, 0, 0, 0.6); padding: 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
                     <div style="display: flex; align-items: center; gap: 10px; font-family: var(--font-heading); font-size: 1.15rem; font-weight: 700; color: var(--accent-cyan);">
@@ -877,6 +879,6 @@
     </div>
 
     <!-- Application Script -->
-    <script src="static/js/app.js?v=510"></script>
+    <script src="static/js/app.js?v=511"></script>
 </body>
 </html>

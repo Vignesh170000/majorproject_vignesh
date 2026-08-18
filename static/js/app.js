@@ -41,16 +41,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (theme === 'light') {
             document.body.classList.add('light-theme');
             document.body.setAttribute('data-theme', 'light');
-            if (themeIcon) themeIcon.textContent = '🌙';
-            if (themeLabel) themeLabel.textContent = 'Dark Mode';
+            if (themeIcon) themeIcon.textContent = '🚀';
+            if (themeLabel) themeLabel.textContent = 'Cyber Neon';
         } else {
             document.body.classList.remove('light-theme');
             document.body.setAttribute('data-theme', 'dark');
-            if (themeIcon) themeIcon.textContent = '☀️';
-            if (themeLabel) themeLabel.textContent = 'Light Mode';
+            if (themeIcon) themeIcon.textContent = '⚡';
+            if (themeLabel) themeLabel.textContent = 'Crisp White';
         }
         localStorage.setItem('aria_theme_mode', theme);
     }
+
 
     const savedTheme = localStorage.getItem('aria_theme_mode') || 'dark';
     applyThemeMode(savedTheme);

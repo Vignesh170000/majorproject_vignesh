@@ -55,6 +55,7 @@
                 radial-gradient(circle at 85% 85%, rgba(0, 242, 254, 0.2) 0%, transparent 40%),
                 radial-gradient(circle at 50% 50%, rgba(245, 87, 108, 0.15) 0%, transparent 50%);
             background-attachment: fixed;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .app-container {
@@ -199,42 +200,27 @@
             fill: #ffffff;
         }
 
-        .orb-container:hover .glowing-orb {
+        .glowing-orb:hover {
             transform: scale(1.08);
-            box-shadow: 0 0 60px var(--accent-cyan), inset 0 0 30px rgba(255, 255, 255, 0.8);
-        }
-
-        .orb-container.listening .glowing-orb {
-            background: radial-gradient(circle at 35% 35%, var(--accent-pink), var(--danger) 70%, var(--bg-dark));
-            box-shadow: 0 0 60px var(--accent-pink), inset 0 0 30px rgba(255, 255, 255, 0.8);
-            animation: orbPulse 1.2s infinite alternate ease-in-out;
+            box-shadow: 0 0 60px var(--accent-cyan), inset 0 0 35px rgba(255, 255, 255, 0.8);
         }
 
         .pulse-ring {
             position: absolute;
+            width: 130px;
+            height: 130px;
             border-radius: 50%;
             border: 2px solid var(--accent-cyan);
             opacity: 0;
             pointer-events: none;
         }
 
-        .orb-container.listening .pulse-ring-1 {
-            width: 150px;
-            height: 150px;
-            border-color: var(--accent-pink);
-            animation: pulseOut 1.8s infinite ease-out;
+        .pulse-ring.listening {
+            animation: pulseOut 1.5s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
         }
 
-        .orb-container.listening .pulse-ring-2 {
-            width: 185px;
-            height: 185px;
-            border-color: var(--accent-cyan);
-            animation: pulseOut 1.8s infinite ease-out 0.6s;
-        }
-
-        @keyframes orbPulse {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.12); }
+        .pulse-ring-2.listening {
+            animation-delay: 0.5s;
         }
 
         @keyframes pulseOut {
@@ -304,8 +290,8 @@
         }
 
         .btn-action-mic {
-            width: 46px;
-            height: 46px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             border: none;
             background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
@@ -389,11 +375,14 @@
         .section-title {
             font-family: var(--font-heading);
             font-size: 1.15rem;
+            font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: 18px;
             display: flex;
             align-items: center;
             gap: 10px;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .section-title svg {
@@ -402,101 +391,111 @@
             fill: var(--accent-cyan);
         }
 
-        /* Command Chips Grid */
-        .chips-wrapper {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 12px;
-        }
-
-        .chip-btn {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: var(--text-secondary);
-            padding: 12px 14px;
-            border-radius: var(--radius-md);
-            font-family: var(--font-main);
-            font-size: 0.88rem;
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.25s ease;
-            text-align: left;
-        }
-
-        .chip-btn svg {
-            width: 18px;
-            height: 18px;
-            fill: var(--accent-blue);
-            flex-shrink: 0;
-        }
-
-        .chip-btn:hover {
-            background: rgba(0, 242, 254, 0.12);
-            border-color: var(--accent-cyan);
-            color: var(--text-primary);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0, 242, 254, 0.15);
-        }
-
-        /* Response Display & Activity Log */
-        .response-card {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: var(--radius-md);
-            padding: 16px;
-            margin-bottom: 16px;
-            border-left: 4px solid var(--accent-purple);
-        }
-
-        .response-title {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--accent-cyan);
-            margin-bottom: 6px;
-            font-weight: 700;
-        }
-
-        .response-body {
-            font-size: 0.98rem;
-            line-height: 1.5;
-            color: var(--text-primary);
-        }
-
-        .log-list {
-            flex: 1;
-            max-height: 280px;
-            overflow-y: auto;
+        /* Log Activity Stream */
+        .log-stream {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
+            max-height: 380px;
+            overflow-y: auto;
             padding-right: 6px;
         }
 
-        .log-list::-webkit-scrollbar { width: 5px; }
-        .log-list::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 4px; }
-
         .log-item {
-            background: rgba(0, 0, 0, 0.25);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 10px 14px;
-            border-radius: var(--radius-sm);
-            font-size: 0.85rem;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 3px solid var(--accent-cyan);
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            padding: 12px 16px;
+            font-size: 0.9rem;
+            animation: slideIn 0.3s ease;
         }
 
-        .log-item.user { border-left: 3px solid var(--accent-cyan); }
-        .log-item.assistant { border-left: 3px solid var(--accent-purple); background: rgba(127, 0, 255, 0.06); }
-        .log-item.system { border-left: 3px solid var(--text-muted); }
+        .log-item.user {
+            border-left-color: var(--accent-purple);
+            background: rgba(127, 0, 255, 0.08);
+        }
 
-        .log-tag { font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+        .log-item.assistant {
+            border-left-color: var(--accent-cyan);
+            background: rgba(0, 242, 254, 0.08);
+        }
 
-        /* System Performance Gauges */
-        .system-gauges {
+        .log-item.system {
+            border-left-color: var(--warning);
+            background: rgba(245, 158, 11, 0.08);
+        }
+
+        .log-time {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Response Preview Panel */
+        .response-card {
+            background: linear-gradient(135deg, rgba(0, 242, 254, 0.1), rgba(127, 0, 255, 0.15));
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .response-category-badge {
+            align-self: flex-start;
+            font-size: 0.72rem;
+            padding: 4px 12px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--accent-cyan);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .response-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            font-weight: 400;
+        }
+
+        /* Quick Commands Grid */
+        .quick-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .chip {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .chip:hover {
+            background: var(--accent-cyan);
+            color: var(--bg-dark);
+            font-weight: 600;
+            transform: translateY(-2px);
+        }
+
+        /* System Gauges */
+        .gauges-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
@@ -553,6 +552,49 @@
             box-shadow: 0 6px 20px rgba(0, 242, 254, 0.6) !important;
         }
 
+        /* Dynamic Light / Dark Theme Mode */
+        body.light-theme {
+            --bg-dark: #f1f5f9;
+            --card-bg: rgba(255, 255, 255, 0.94);
+            --card-border: rgba(0, 51, 102, 0.15);
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --text-muted: #64748b;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(0, 242, 254, 0.18) 0%, transparent 45%),
+                radial-gradient(circle at 85% 85%, rgba(127, 0, 255, 0.18) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(245, 87, 108, 0.12) 0%, transparent 50%);
+        }
+
+        body.light-theme .top-nav,
+        body.light-theme .hero-card,
+        body.light-theme .section-card,
+        body.light-theme .history-panel,
+        body.light-theme .auth-window {
+            box-shadow: 0 10px 35px rgba(0, 51, 102, 0.12);
+        }
+
+        body.light-theme .input-bar,
+        body.light-theme .gauge-box {
+            background: rgba(241, 245, 249, 0.95);
+            border-color: rgba(0, 51, 102, 0.2);
+            color: #0f172a;
+        }
+
+        body.light-theme #command-input {
+            color: #0f172a;
+        }
+
+        body.light-theme #command-input::placeholder {
+            color: #64748b;
+        }
+
+        body.light-theme .widget {
+            background: rgba(0, 51, 102, 0.06);
+            border-color: rgba(0, 51, 102, 0.12);
+            color: #334155;
+        }
+
         /* Footer */
         .footer {
             text-align: center;
@@ -579,6 +621,10 @@
             </div>
 
             <div class="status-widgets">
+                <div class="widget" id="btn-toggle-theme" style="cursor: pointer; background: rgba(0, 242, 254, 0.1); border-color: rgba(0, 242, 254, 0.25);" title="Switch Light/Dark Theme">
+                    <span id="theme-icon">☀️</span>
+                    <span id="theme-label">Light Mode</span>
+                </div>
                 <div class="widget" id="btn-toggle-history" style="cursor: pointer;" title="View Chat History & Saved Sessions">
                     <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
                     <span>History</span>
@@ -617,92 +663,76 @@
                 <canvas id="audio-waveform" width="650" height="70"></canvas>
             </div>
 
-            <!-- Voice Status Indicator -->
+            <!-- Status Label -->
             <div class="status-badge-bar">
                 <div class="status-dot" id="status-dot"></div>
-                <span id="status-text">Click the microphone or type below to issue a command</span>
+                <span id="status-text">Assistant Ready. Click Orb or Microphone button to speak!</span>
             </div>
 
-            <!-- Console Input -->
+            <!-- Input Bar -->
             <div class="input-bar">
-                <button class="btn-action-mic" id="btn-mic-toggle" title="Toggle Voice Recognition">
-                    <svg viewBox="0 0 24 24" id="mic-icon-svg"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
+                <button class="btn-action-mic" id="btn-mic-toggle" title="Start/Stop Microphone Listening">
+                    <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
                 </button>
-                <input type="text" id="command-input" placeholder="Ask anything... (e.g. 'What is the time?', 'Search Wikipedia for AI', 'Open Notepad')" autocomplete="off">
+                <input type="text" id="command-input" placeholder="Type command or query (e.g. 'what time is it', 'open notepad')..." autocomplete="off">
                 <button class="btn-action-send" id="btn-send" title="Send Command">
                     <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                 </button>
             </div>
-
-            <!-- Hero Featured Result Banner -->
-            <div class="hero-response-card" id="hero-response-box" style="width: 100%; max-width: 720px; margin-top: 24px; background: rgba(0, 0, 0, 0.4); border-left: 4px solid var(--accent-cyan); border-radius: var(--radius-md); padding: 18px 22px; display: flex; flex-direction: column; gap: 8px;">
-                <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent-cyan); font-weight: 700;" id="hero-category">LATEST RESULT</div>
-                <div style="font-size: 1.05rem; line-height: 1.6; color: var(--text-primary);" id="hero-response-text">
-                    Ask a question or click a command above to view instant AI search results here.
-                </div>
-            </div>
         </main>
 
-        <!-- Dashboard Grid: Quick Actions & Log Stream -->
+        <!-- Dashboard Grid: Response Card + System Gauges & Quick Commands -->
         <div class="dashboard-grid">
-            <!-- Left Panel: Quick Action Shortcuts -->
+            <!-- Left Column: Voice Response Output -->
             <section class="section-card">
-                <h2 class="section-title">
-                    <svg viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
-                    Interactive Command Shortcuts
-                </h2>
-                <div class="chips-wrapper">
-                    <button class="chip-btn" id="chip-btn-auth" style="background: rgba(0, 242, 254, 0.15); border-color: var(--accent-cyan); color: var(--accent-cyan); font-weight: 700;">
-                        <svg viewBox="0 0 24 24" style="fill:var(--accent-cyan);"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
-                        🔒 Sign In / Account
-                    </button>
-                    <button class="chip-btn" id="chip-btn-history" style="background: rgba(127, 0, 255, 0.2); border-color: var(--accent-purple); color: #fff; font-weight: 700;">
-                        <svg viewBox="0 0 24 24" style="fill:var(--accent-purple);"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
-                        📜 Saved Chat History
-                    </button>
-                    <button class="chip-btn" data-cmd="What is the current time?">
-                        <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
-                        Current Time
-                    </button>
-                    <button class="chip-btn" data-cmd="Search Wikipedia for Artificial Intelligence">
-                        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                        Wikipedia AI
-                    </button>
-                    <button class="chip-btn" data-cmd="Open Notepad">
-                        <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
-                        Open Notepad
-                    </button>
-                    <button class="chip-btn" data-cmd="Open Calculator">
-                        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-6 14h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2zm4 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2zM7 17H5v-2h2v2zm0-4H5v-2h2v2zm0-4H5V7h2v2z"/></svg>
-                        Calculator
-                    </button>
-                    <button class="chip-btn" data-cmd="Open YouTube">
-                        <svg viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83-.25.9-.83 1.48-1.73 1.73-.47.13-1.33.22-2.65.28-1.3.07-2.49.1-3.59.1L12 19c-4.19 0-6.8-.16-7.83-.44-.9-.25-1.48-.83-1.73-1.73-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83.25-.9.83-1.48 1.73-1.73.47-.13 1.33-.22 2.65-.28 1.3-.07 2.49-.1 3.59-.1L12 5c4.19 0 6.8.16 7.83.44.9.25 1.48.83 1.73 1.73z"/></svg>
-                        YouTube
-                    </button>
-                    <button class="chip-btn" data-cmd="What is 144 divided by 12?">
-                        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
-                        Math Solver
-                    </button>
-                    <button class="chip-btn" data-cmd="Tell me a joke">
-                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-3.5-9c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm7 0c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/></svg>
-                        Tell Joke
-                    </button>
-                    <button class="chip-btn" data-cmd="Show system status">
-                        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14h-4v-4h4v4zm0-6h-4V7h4v4z"/></svg>
-                        System Stats
-                    </button>
+                <div class="section-title">
+                    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+                    <span>Assistant Live Response</span>
+                </div>
+                <div class="response-card" id="response-card">
+                    <div class="response-category-badge" id="response-category">System Ready</div>
+                    <div class="response-text" id="response-text-content">
+                        "Hello! I am ARIA, your AI Voice Assistant. You can click the glowing orb or microphone to speak, or type your command in the input bar below!"
+                    </div>
                 </div>
 
-                <!-- Live System Gauges -->
-                <div class="system-gauges">
+                <div style="margin-top: 18px;">
+                    <div style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; margin-bottom: 8px;">Try Speaking Quick Commands:</div>
+                    <div class="quick-chips">
+                        <div class="chip" onclick="quickCommand('what is the current time?')">🕒 What time is it?</div>
+                        <div class="chip" onclick="quickCommand('show system status')">📊 System Status</div>
+                        <div class="chip" onclick="quickCommand('calculate 12 times 8')">🧮 Calculate 12 * 8</div>
+                        <div class="chip" onclick="quickCommand('open notepad')">📝 Open Notepad</div>
+                        <div class="chip" onclick="quickCommand('open calculator')">🔢 Open Calculator</div>
+                        <div class="chip" onclick="quickCommand('tell me a joke')">😂 Tell me a joke</div>
+                        <div class="chip" onclick="quickCommand('describe me about artificial intelligence')">🔍 Search AI Report</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Column: Live Log Stream & Performance Gauges -->
+            <section class="section-card">
+                <div class="section-title">
+                    <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                    <span>Interaction Activity Stream</span>
+                </div>
+                
+                <div class="log-stream" id="log-stream">
+                    <div class="log-item system">
+                        <div class="log-time">System Startup</div>
+                        <div>🚀 ARIA AI Engine & Web Control Center initialized successfully.</div>
+                    </div>
+                </div>
+
+                <!-- Hardware Performance Gauges -->
+                <div class="gauges-container">
                     <div class="gauge-box">
                         <div class="gauge-header">
-                            <span>CPU Load</span>
+                            <span>CPU Utilization</span>
                             <span id="cpu-val">0%</span>
                         </div>
                         <div class="bar-outer">
-                            <div class="bar-inner" id="cpu-bar" style="width: 0%;"></div>
+                            <div class="bar-inner" id="cpu-bar"></div>
                         </div>
                     </div>
                     <div class="gauge-box">
@@ -711,84 +741,58 @@
                             <span id="ram-val">0%</span>
                         </div>
                         <div class="bar-outer">
-                            <div class="bar-inner" id="ram-bar" style="width: 0%;"></div>
+                            <div class="bar-inner" id="ram-bar"></div>
                         </div>
                     </div>
                 </div>
             </section>
-
-            <!-- Right Panel: Response Display & Live Activity Log -->
-            <section class="section-card">
-                <h2 class="section-title">
-                    <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
-                    Live Assistant Response & Log
-                </h2>
-
-                <!-- Latest Assistant Response Box -->
-                <div class="response-card" id="latest-response-box">
-                    <div class="response-title" id="response-category">ARIA AI ENGINE READY</div>
-                    <div class="response-body" id="response-text-content">
-                        Hello! I am ARIA, your AI Voice Assistant. Speak or select a command above to get started.
-                    </div>
-                </div>
-
-                <!-- Log Stream -->
-                <div class="log-list" id="log-stream">
-                    <div class="log-item system">
-                        <span class="log-tag">SYSTEM INITIALIZED</span>
-                        <span>SpeechRecognition & pyttsx3 engine online.</span>
-                    </div>
-                </div>
-            </section>
         </div>
 
-        <!-- Interactive Glassmorphism Notepad Window Modal -->
-        <div id="notepad-modal" class="notepad-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center; padding: 20px;">
-            <div class="notepad-window" style="width: 100%; max-width: 750px; background: rgba(18, 24, 43, 0.95); border: 1px solid var(--accent-cyan); border-radius: var(--radius-lg); box-shadow: 0 0 40px rgba(0, 242, 254, 0.3); display: flex; flex-direction: column; overflow: hidden;">
-                <!-- Notepad Header Bar -->
-                <div style="background: rgba(0, 0, 0, 0.4); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
-                    <div style="display: flex; align-items: center; gap: 10px; font-family: var(--font-heading); font-size: 1.1rem; font-weight: 700; color: var(--accent-cyan);">
+        <!-- Built-in Interactive Notepad Modal -->
+        <div id="notepad-modal" class="auth-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); z-index: 10000; align-items: center; justify-content: center; padding: 20px;">
+            <div class="auth-window" style="width: 100%; max-width: 650px; background: rgba(15, 22, 41, 0.96); border: 1px solid var(--accent-cyan); border-radius: var(--radius-lg); box-shadow: 0 0 50px rgba(0, 242, 254, 0.35); display: flex; flex-direction: column; overflow: hidden;">
+                <div style="background: rgba(0, 0, 0, 0.4); padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                    <div style="display: flex; align-items: center; gap: 10px; font-family: var(--font-heading); font-size: 1.15rem; font-weight: 700; color: var(--accent-cyan);">
                         <svg viewBox="0 0 24 24" style="width:22px; height:22px; fill:var(--accent-cyan);"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
-                        <span>ARIA INTERACTIVE NOTEPAD</span>
+                        <span>INTERACTIVE GLASSMORPHISM NOTEPAD</span>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <button id="btn-notepad-save" class="btn-sm" style="background: var(--accent-blue); color: #fff; border: none; padding: 6px 12px; border-radius: 6px; font-weight: 600; cursor: pointer;">💾 Save File</button>
-                        <button id="btn-notepad-copy" class="btn-sm" style="background: rgba(255, 255, 255, 0.1); color: var(--text-primary); border: 1px solid rgba(255, 255, 255, 0.2); padding: 6px 12px; border-radius: 6px; font-weight: 600; cursor: pointer;">📋 Copy</button>
-                        <button id="btn-notepad-clear" class="btn-sm" style="background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); padding: 6px 12px; border-radius: 6px; font-weight: 600; cursor: pointer;">🧹 Clear</button>
-                        <button id="btn-notepad-close" style="background: transparent; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer; padding: 0 6px;" title="Close Notepad">&times;</button>
+                    <button id="btn-notepad-close" style="background: transparent; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer;" title="Close Window">&times;</button>
+                </div>
+                <div style="padding: 20px; display: flex; flex-direction: column; gap: 14px;">
+                    <textarea id="notepad-editor" placeholder="Type your quick notes, meeting minutes, or ideas here..." style="width: 100%; height: 260px; background: rgba(8, 12, 24, 0.9); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: var(--radius-md); padding: 16px; color: #fff; font-family: var(--font-main); font-size: 1rem; outline: none; resize: vertical;"></textarea>
+                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">
+                            Words: <span id="notepad-word-count" style="color: var(--accent-cyan); font-weight: 700;">0</span> | 
+                            Chars: <span id="notepad-char-count" style="color: var(--accent-cyan); font-weight: 700;">0</span>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button id="btn-notepad-copy" style="background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid rgba(255, 255, 255, 0.2); padding: 8px 14px; border-radius: var(--radius-md); font-weight: 600; font-size: 0.85rem; cursor: pointer;">📋 Copy</button>
+                            <button id="btn-notepad-clear" style="background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid var(--danger); padding: 8px 14px; border-radius: var(--radius-md); font-weight: 600; font-size: 0.85rem; cursor: pointer;">🧹 Clear</button>
+                            <button id="btn-notepad-download" style="background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue)); color: #fff; border: none; padding: 8px 16px; border-radius: var(--radius-md); font-weight: 700; font-size: 0.85rem; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 242, 254, 0.35);">💾 Save File (.txt)</button>
+                        </div>
                     </div>
-                </div>
-                <!-- Notepad Text Editor Area -->
-                <div style="padding: 16px; flex: 1; display: flex; flex-direction: column;">
-                    <textarea id="notepad-textarea" placeholder="Type your notes or speech dictation here... (You can save this file directly as notes.txt)" style="width: 100%; height: 320px; background: rgba(8, 12, 24, 0.9); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: var(--radius-md); padding: 16px; color: #ffffff; font-family: 'Space Grotesk', monospace, sans-serif; font-size: 1.05rem; line-height: 1.6; outline: none; resize: none;"></textarea>
-                </div>
-                <!-- Notepad Footer -->
-                <div style="background: rgba(0, 0, 0, 0.3); padding: 10px 20px; display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted);">
-                    <span id="notepad-char-count">0 characters | 0 words</span>
-                    <span>Ready for note-taking</span>
                 </div>
             </div>
         </div>
 
-        <!-- Interactive Glassmorphism Calculator Window Modal -->
-        <div id="calculator-modal" class="calculator-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center; padding: 20px;">
-            <div class="calculator-window" style="width: 100%; max-width: 380px; background: rgba(18, 24, 43, 0.95); border: 1px solid var(--accent-cyan); border-radius: var(--radius-lg); box-shadow: 0 0 40px rgba(0, 242, 254, 0.3); display: flex; flex-direction: column; overflow: hidden;">
-                <!-- Calculator Header Bar -->
-                <div style="background: rgba(0, 0, 0, 0.4); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+        <!-- Built-in Interactive Calculator Modal -->
+        <div id="calculator-modal" class="auth-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); z-index: 10000; align-items: center; justify-content: center; padding: 20px;">
+            <div class="auth-window" style="width: 100%; max-width: 360px; background: rgba(15, 22, 41, 0.96); border: 1px solid var(--accent-cyan); border-radius: var(--radius-lg); box-shadow: 0 0 50px rgba(0, 242, 254, 0.35); display: flex; flex-direction: column; overflow: hidden;">
+                <div style="background: rgba(0, 0, 0, 0.4); padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
                     <div style="display: flex; align-items: center; gap: 10px; font-family: var(--font-heading); font-size: 1.1rem; font-weight: 700; color: var(--accent-cyan);">
-                        <svg viewBox="0 0 24 24" style="width:22px; height:22px; fill:var(--accent-cyan);"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-6 14h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2zm4 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2zM7 17H5v-2h2v2zm0-4H5v-2h2v2zm0-4H5V7h2v2z"/></svg>
-                        <span>INTERACTIVE CALCULATOR</span>
+                        <svg viewBox="0 0 24 24" style="width:20px; height:20px; fill:var(--accent-cyan);"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                        <span>GLASSMORPHISM CALCULATOR</span>
                     </div>
-                    <button id="btn-calc-close" style="background: transparent; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer; padding: 0 6px;" title="Close Calculator">&times;</button>
+                    <button id="btn-calc-close" style="background: transparent; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer;" title="Close Window">&times;</button>
                 </div>
-                <!-- Calculator Screen & Grid -->
-                <div style="padding: 20px; display: flex; flex-direction: column; gap: 16px;">
-                    <input type="text" id="calc-screen" readonly value="0" style="width: 100%; height: 60px; background: rgba(8, 12, 24, 0.9); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: var(--radius-md); text-align: right; padding: 0 16px; font-family: 'Space Grotesk', monospace; font-size: 1.8rem; font-weight: 700; color: var(--accent-cyan); outline: none;">
+                <div style="padding: 20px; display: flex; flex-direction: column; gap: 14px;">
+                    <div id="calc-display" style="width: 100%; background: rgba(8, 12, 24, 0.9); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: var(--radius-md); padding: 16px; color: var(--accent-cyan); font-family: var(--font-heading); font-size: 1.8rem; font-weight: 700; text-align: right; overflow-x: auto; min-height: 64px;">0</div>
+                    
                     <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
-                        <button class="calc-btn calc-action" data-val="C" style="background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); padding: 14px; border-radius: 10px; font-size: 1.1rem; font-weight: 700; cursor: pointer;">C</button>
-                        <button class="calc-btn calc-action" data-val="BACK" style="background: rgba(255, 255, 255, 0.08); color: var(--text-primary); border: 1px solid rgba(255, 255, 255, 0.1); padding: 14px; border-radius: 10px; font-size: 1.1rem; font-weight: 700; cursor: pointer;">⌫</button>
+                        <button class="calc-btn calc-clear" data-val="C" style="background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); padding: 14px; border-radius: 10px; font-size: 1.1rem; font-weight: 700; cursor: pointer;">C</button>
                         <button class="calc-btn calc-op" data-val="/" style="background: rgba(127, 0, 255, 0.25); color: var(--accent-purple); border: 1px solid var(--accent-purple); padding: 14px; border-radius: 10px; font-size: 1.2rem; font-weight: 700; cursor: pointer;">÷</button>
                         <button class="calc-btn calc-op" data-val="*" style="background: rgba(127, 0, 255, 0.25); color: var(--accent-purple); border: 1px solid var(--accent-purple); padding: 14px; border-radius: 10px; font-size: 1.2rem; font-weight: 700; cursor: pointer;">×</button>
+                        <button class="calc-btn calc-back" data-val="back" style="background: rgba(255, 255, 255, 0.1); color: #fff; border: 1px solid rgba(255, 255, 255, 0.15); padding: 14px; border-radius: 10px; font-size: 1.1rem; font-weight: 700; cursor: pointer;">⌫</button>
                         
                         <button class="calc-btn calc-num" data-val="7" style="background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid rgba(255, 255, 255, 0.08); padding: 14px; border-radius: 10px; font-size: 1.2rem; font-weight: 600; cursor: pointer;">7</button>
                         <button class="calc-btn calc-num" data-val="8" style="background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid rgba(255, 255, 255, 0.08); padding: 14px; border-radius: 10px; font-size: 1.2rem; font-weight: 600; cursor: pointer;">8</button>
@@ -908,6 +912,6 @@
     </div>
 
     <!-- Application Script -->
-    <script src="static/js/app.js?v=1303"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}?v=506"></script>
 </body>
 </html>

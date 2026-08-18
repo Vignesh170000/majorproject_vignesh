@@ -26,6 +26,19 @@
             --font-google: 'Google Sans', 'Roboto', -apple-system, sans-serif;
         }
 
+        body.light-theme {
+            --g-bg-dark: #f8fafc;
+            --g-card-bg: #ffffff;
+            --g-text-light: #202124;
+            --g-text-muted: #5f6368;
+            --g-border: #dadce0;
+        }
+
+        body.light-theme .g-card {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            border-color: #dadce0;
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
@@ -38,7 +51,9 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
+            position: relative;
         }
+
 
         .g-card {
             width: 100%;
@@ -290,14 +305,37 @@
         </div>
     </div>
 
+    <button id="g-theme-toggle" style="position: absolute; top: 20px; right: 20px; background: var(--g-card-bg); border: 1px solid var(--g-border); color: var(--g-text-light); padding: 8px 16px; border-radius: 20px; font-family: var(--font-google); cursor: pointer; font-size: 0.85rem; z-index: 100;">☀️ Light Mode</button>
+
     <script>
         let authStep = 1; // 1 = Email, 2 = Password/Verification
+
+        // Theme Switcher Sync
+        const gThemeBtn = document.getElementById('g-theme-toggle');
+        function applyGTheme(t) {
+            if (t === 'light') {
+                document.body.classList.add('light-theme');
+                if (gThemeBtn) gThemeBtn.textContent = '🌙 Dark Mode';
+            } else {
+                document.body.classList.remove('light-theme');
+                if (gThemeBtn) gThemeBtn.textContent = '☀️ Light Mode';
+            }
+            localStorage.setItem('aria_theme_mode', t);
+        }
+        applyGTheme(localStorage.getItem('aria_theme_mode') || 'dark');
+        if (gThemeBtn) {
+            gThemeBtn.addEventListener('click', () => {
+                const isLight = document.body.classList.contains('light-theme');
+                applyGTheme(isLight ? 'dark' : 'light');
+            });
+        }
 
         function showAlert(msg) {
             const alertBox = document.getElementById('alert-box');
             alertBox.textContent = msg;
             alertBox.style.display = 'block';
         }
+
 
         // Global Google Identity Services Callback
         window.handleGoogleCredentialResponse = function(response) {

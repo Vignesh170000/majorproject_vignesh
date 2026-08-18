@@ -32,7 +32,30 @@
             --font-heading: 'Space Grotesk', sans-serif;
         }
 
+        body.light-theme {
+            --bg-dark: #f8fafc;
+            --card-bg: rgba(255, 255, 255, 0.94);
+            --card-border: rgba(0, 51, 102, 0.15);
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --text-muted: #64748b;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(0, 242, 254, 0.18) 0%, transparent 45%),
+                radial-gradient(circle at 85% 85%, rgba(127, 0, 255, 0.18) 0%, transparent 45%);
+        }
+
+        body.light-theme .auth-card {
+            box-shadow: 0 15px 40px rgba(0, 51, 102, 0.15);
+        }
+
+        body.light-theme .form-input {
+            background: rgba(241, 245, 249, 0.95);
+            border-color: rgba(0, 51, 102, 0.2);
+            color: #0f172a;
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
+
 
         body {
             font-family: var(--font-main);
@@ -298,6 +321,8 @@
     </style>
 </head>
 <body>
+    <button id="theme-toggle-btn" style="position: absolute; top: 20px; right: 20px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: var(--text-primary); padding: 8px 16px; border-radius: 20px; font-family: var(--font-main); cursor: pointer; font-size: 0.85rem; font-weight: 600; z-index: 100;">☀️ Light Mode</button>
+
 
     <div class="auth-card">
         <div class="auth-header">
@@ -435,7 +460,26 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+            // Theme Switcher Sync
+            const themeToggleBtn = document.getElementById('theme-toggle-btn');
+            function applyAuthTheme(t) {
+                if (t === 'light') {
+                    document.body.classList.add('light-theme');
+                    if (themeToggleBtn) themeToggleBtn.textContent = '🌙 Dark Mode';
+                } else {
+                    document.body.classList.remove('light-theme');
+                    if (themeToggleBtn) themeToggleBtn.textContent = '☀️ Light Mode';
+                }
+                localStorage.setItem('aria_theme_mode', t);
+            }
+            applyAuthTheme(localStorage.getItem('aria_theme_mode') || 'dark');
+            if (themeToggleBtn) {
+                themeToggleBtn.addEventListener('click', () => {
+                    const isLight = document.body.classList.contains('light-theme');
+                    applyAuthTheme(isLight ? 'dark' : 'light');
+                });
+            }
+
             const tabLogin = document.getElementById('tab-login');
             const tabRegister = document.getElementById('tab-register');
             const nameGroup = document.getElementById('name-group');

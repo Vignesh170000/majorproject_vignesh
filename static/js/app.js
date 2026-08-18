@@ -31,6 +31,39 @@ document.addEventListener('DOMContentLoaded', () => {
     let wavePhase = 0;
 
     // --------------------------------------------------
+    // 0. Dynamic Theme Switcher Engine (Light / Dark Mode)
+    // --------------------------------------------------
+    const btnToggleTheme = document.getElementById('btn-toggle-theme');
+    const themeIcon = document.getElementById('theme-icon');
+    const themeLabel = document.getElementById('theme-label');
+
+    function applyThemeMode(theme) {
+        if (theme === 'light') {
+            document.body.classList.add('light-theme');
+            document.body.setAttribute('data-theme', 'light');
+            if (themeIcon) themeIcon.textContent = '🌙';
+            if (themeLabel) themeLabel.textContent = 'Dark Mode';
+        } else {
+            document.body.classList.remove('light-theme');
+            document.body.setAttribute('data-theme', 'dark');
+            if (themeIcon) themeIcon.textContent = '☀️';
+            if (themeLabel) themeLabel.textContent = 'Light Mode';
+        }
+        localStorage.setItem('aria_theme_mode', theme);
+    }
+
+    const savedTheme = localStorage.getItem('aria_theme_mode') || 'dark';
+    applyThemeMode(savedTheme);
+
+    if (btnToggleTheme) {
+        btnToggleTheme.addEventListener('click', () => {
+            const isCurrentlyLight = document.body.classList.contains('light-theme');
+            applyThemeMode(isCurrentlyLight ? 'dark' : 'light');
+        });
+    }
+
+
+    // --------------------------------------------------
     // 1. Audio Synthesizer Sound Effects (Web Audio API)
     // --------------------------------------------------
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();

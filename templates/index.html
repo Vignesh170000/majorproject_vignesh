@@ -553,6 +553,49 @@
             box-shadow: 0 6px 20px rgba(0, 242, 254, 0.6) !important;
         }
 
+        /* Dynamic Light / Dark Theme Mode */
+        body.light-theme {
+            --bg-dark: #f1f5f9;
+            --card-bg: rgba(255, 255, 255, 0.94);
+            --card-border: rgba(0, 51, 102, 0.15);
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --text-muted: #64748b;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(0, 242, 254, 0.18) 0%, transparent 45%),
+                radial-gradient(circle at 85% 85%, rgba(127, 0, 255, 0.18) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(245, 87, 108, 0.12) 0%, transparent 50%);
+        }
+
+        body.light-theme .top-nav,
+        body.light-theme .hero-card,
+        body.light-theme .section-card,
+        body.light-theme .history-panel,
+        body.light-theme .auth-window {
+            box-shadow: 0 10px 35px rgba(0, 51, 102, 0.12);
+        }
+
+        body.light-theme .input-bar,
+        body.light-theme .gauge-box {
+            background: rgba(241, 245, 249, 0.95);
+            border-color: rgba(0, 51, 102, 0.2);
+            color: #0f172a;
+        }
+
+        body.light-theme #command-input {
+            color: #0f172a;
+        }
+
+        body.light-theme #command-input::placeholder {
+            color: #64748b;
+        }
+
+        body.light-theme .widget {
+            background: rgba(0, 51, 102, 0.06);
+            border-color: rgba(0, 51, 102, 0.12);
+            color: #334155;
+        }
+
         /* Footer */
         .footer {
             text-align: center;
@@ -579,6 +622,10 @@
             </div>
 
             <div class="status-widgets">
+                <div class="widget" id="btn-toggle-theme" style="cursor: pointer; background: rgba(0, 242, 254, 0.1); border-color: rgba(0, 242, 254, 0.25);" title="Switch Light/Dark Theme">
+                    <span id="theme-icon">☀️</span>
+                    <span id="theme-label">Light Mode</span>
+                </div>
                 <div class="widget" id="btn-toggle-history" style="cursor: pointer;" title="View Chat History & Saved Sessions">
                     <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
                     <span>History</span>

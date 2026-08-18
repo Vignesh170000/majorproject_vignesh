@@ -222,23 +222,51 @@
         .pulse-ring {
             position: absolute;
             border-radius: 50%;
-            border: 2px solid var(--accent-cyan);
-            opacity: 0;
+            border: 2px dashed var(--accent-cyan);
+            opacity: 0.6;
             pointer-events: none;
+            animation: jarvisRotate 15s linear infinite;
+        }
+
+        .pulse-ring-1 {
+            width: 145px;
+            height: 145px;
+            border-color: rgba(0, 242, 254, 0.4);
+        }
+
+        .pulse-ring-2 {
+            width: 175px;
+            height: 175px;
+            border-color: rgba(139, 92, 246, 0.4);
+            animation-duration: 25s;
+            animation-direction: reverse;
         }
 
         .orb-container.listening .pulse-ring-1 {
             width: 150px;
             height: 150px;
             border-color: var(--accent-pink);
-            animation: pulseOut 1.8s infinite ease-out;
+            border-style: solid;
+            animation: jarvisPulseRing 1.6s infinite ease-out;
         }
 
         .orb-container.listening .pulse-ring-2 {
             width: 185px;
             height: 185px;
             border-color: var(--accent-cyan);
-            animation: pulseOut 1.8s infinite ease-out 0.6s;
+            border-style: solid;
+            animation: jarvisPulseRing 1.6s infinite ease-out 0.5s;
+        }
+
+        @keyframes jarvisRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes jarvisPulseRing {
+            0% { transform: scale(0.85); opacity: 0.8; border-color: var(--accent-cyan); }
+            50% { opacity: 0.5; border-color: var(--accent-purple); }
+            100% { transform: scale(1.5); opacity: 0; border-color: var(--accent-pink); }
         }
 
         @keyframes orbPulse {
@@ -246,9 +274,35 @@
             100% { transform: scale(1.12); }
         }
 
-        @keyframes pulseOut {
-            0% { transform: scale(0.8); opacity: 0.8; }
-            100% { transform: scale(1.4); opacity: 0; }
+        /* Animated Soundwave Bars Badge */
+        .sound-wave-bars {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            height: 18px;
+        }
+
+        .sw-bar {
+            width: 3px;
+            height: 6px;
+            background: var(--accent-cyan);
+            border-radius: 2px;
+            transition: all 0.2s ease;
+        }
+
+        .status-badge-bar.listening .sw-bar {
+            background: var(--accent-pink);
+            animation: soundWaveBar 0.8s ease-in-out infinite alternate;
+        }
+
+        .status-badge-bar.listening .b1 { animation-delay: 0.1s; }
+        .status-badge-bar.listening .b2 { animation-delay: 0.25s; }
+        .status-badge-bar.listening .b3 { animation-delay: 0.4s; }
+        .status-badge-bar.listening .b4 { animation-delay: 0.15s; }
+
+        @keyframes soundWaveBar {
+            0% { height: 4px; }
+            100% { height: 18px; }
         }
 
         /* Audio Spectrum Canvas */
@@ -268,6 +322,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+
             background: rgba(255, 255, 255, 0.05);
             padding: 8px 20px;
             border-radius: 30px;
@@ -674,10 +729,17 @@
             </div>
 
             <!-- Voice Status Indicator -->
-            <div class="status-badge-bar">
+            <div class="status-badge-bar" id="status-badge-bar">
                 <div class="status-dot" id="status-dot"></div>
-                <span id="status-text">Click the microphone or type below to issue a command</span>
+                <div class="sound-wave-bars">
+                    <span class="sw-bar b1"></span>
+                    <span class="sw-bar b2"></span>
+                    <span class="sw-bar b3"></span>
+                    <span class="sw-bar b4"></span>
+                </div>
+                <span id="status-text">Click Orb or Microphone button to speak!</span>
             </div>
+
 
             <!-- File / Image Attachment Preview Strip -->
             <div id="file-preview-bar" style="display: none; width: 100%; max-width: 720px; background: rgba(0, 242, 254, 0.08); border: 1px dashed var(--accent-cyan); border-radius: var(--radius-md); padding: 10px 16px; margin-bottom: 12px; align-items: center; justify-content: space-between;">
@@ -990,11 +1052,6 @@
     </div>
 
     <!-- Application Script -->
-    <script src="{{ url_for('static', filename='js/app.js') }}?v=512"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}?v=515"></script>
 </body>
 </html>
-
-
-
-
-

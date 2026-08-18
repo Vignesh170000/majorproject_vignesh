@@ -214,25 +214,88 @@
 
         .pulse-ring {
             position: absolute;
-            width: 130px;
-            height: 130px;
             border-radius: 50%;
-            border: 2px solid var(--accent-cyan);
-            opacity: 0;
+            border: 2px dashed var(--accent-cyan);
+            opacity: 0.6;
             pointer-events: none;
+            animation: jarvisRotate 15s linear infinite;
         }
 
-        .pulse-ring.listening {
-            animation: pulseOut 1.5s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+        .pulse-ring-1 {
+            width: 145px;
+            height: 145px;
+            border-color: rgba(0, 242, 254, 0.4);
         }
 
-        .pulse-ring-2.listening {
-            animation-delay: 0.5s;
+        .pulse-ring-2 {
+            width: 175px;
+            height: 175px;
+            border-color: rgba(139, 92, 246, 0.4);
+            animation-duration: 25s;
+            animation-direction: reverse;
         }
 
-        @keyframes pulseOut {
-            0% { transform: scale(0.8); opacity: 0.8; }
-            100% { transform: scale(1.4); opacity: 0; }
+        .orb-container.listening .pulse-ring-1 {
+            width: 150px;
+            height: 150px;
+            border-color: var(--accent-pink);
+            border-style: solid;
+            animation: jarvisPulseRing 1.6s infinite ease-out;
+        }
+
+        .orb-container.listening .pulse-ring-2 {
+            width: 185px;
+            height: 185px;
+            border-color: var(--accent-cyan);
+            border-style: solid;
+            animation: jarvisPulseRing 1.6s infinite ease-out 0.5s;
+        }
+
+        @keyframes jarvisRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes jarvisPulseRing {
+            0% { transform: scale(0.85); opacity: 0.8; border-color: var(--accent-cyan); }
+            50% { opacity: 0.5; border-color: var(--accent-purple); }
+            100% { transform: scale(1.5); opacity: 0; border-color: var(--accent-pink); }
+        }
+
+        @keyframes orbPulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.12); }
+        }
+
+        /* Animated Soundwave Bars Badge */
+        .sound-wave-bars {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            height: 18px;
+        }
+
+        .sw-bar {
+            width: 3px;
+            height: 6px;
+            background: var(--accent-cyan);
+            border-radius: 2px;
+            transition: all 0.2s ease;
+        }
+
+        .status-badge-bar.listening .sw-bar {
+            background: var(--accent-pink);
+            animation: soundWaveBar 0.8s ease-in-out infinite alternate;
+        }
+
+        .status-badge-bar.listening .b1 { animation-delay: 0.1s; }
+        .status-badge-bar.listening .b2 { animation-delay: 0.25s; }
+        .status-badge-bar.listening .b3 { animation-delay: 0.4s; }
+        .status-badge-bar.listening .b4 { animation-delay: 0.15s; }
+
+        @keyframes soundWaveBar {
+            0% { height: 4px; }
+            100% { height: 18px; }
         }
 
         /* Audio Spectrum Canvas */
@@ -622,7 +685,7 @@
                     <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.2 19.57 10.55 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
                 </div>
                 <div class="brand-text">
-                    <h1>ARIA <span class="badge">CYBERPUNK NEON</span></h1>
+                    <h1>ARIA <span class="badge">JARVIS VOICE MATRIX</span></h1>
                     <p class="subtitle">Speech Recognition, NLP & System Automation Engine</p>
                 </div>
             </div>
@@ -670,10 +733,16 @@
                 <canvas id="audio-waveform" width="650" height="70"></canvas>
             </div>
 
-            <!-- Status Label -->
-            <div class="status-badge-bar">
+            <!-- Voice Status Indicator -->
+            <div class="status-badge-bar" id="status-badge-bar">
                 <div class="status-dot" id="status-dot"></div>
-                <span id="status-text">Assistant Ready. Click Orb or Microphone button to speak!</span>
+                <div class="sound-wave-bars">
+                    <span class="sw-bar b1"></span>
+                    <span class="sw-bar b2"></span>
+                    <span class="sw-bar b3"></span>
+                    <span class="sw-bar b4"></span>
+                </div>
+                <span id="status-text">Click Orb or Microphone button to speak!</span>
             </div>
 
             <!-- File / Image Attachment Preview Strip -->
@@ -714,9 +783,9 @@
                     <span>Assistant Live Response</span>
                 </div>
                 <div class="response-card" id="response-card">
-                    <div class="response-category-badge" id="response-category">Cyberpunk Ready</div>
+                    <div class="response-category-badge" id="response-category">JARVIS Ready</div>
                     <div class="response-text" id="response-text-content">
-                        "Welcome to ARIA Cyberpunk Control Center! Speak a command, upload an image or document, or type below."
+                        "Welcome to ARIA JARVIS Voice Matrix! Speak a command, upload an image or document, or type below."
                     </div>
                 </div>
 
@@ -745,8 +814,8 @@
                 
                 <div class="log-stream" id="log-stream">
                     <div class="log-item system">
-                        <div class="log-time">Cyberpunk Matrix Startup</div>
-                        <div>🚀 ARIA Cyberpunk Neon Matrix Engine & Web Control Center initialized successfully.</div>
+                        <div class="log-time">JARVIS Voice Matrix Startup</div>
+                        <div>🚀 ARIA JARVIS Kinetic Holographic Engine & Web Control Center initialized.</div>
                     </div>
                 </div>
 
@@ -879,7 +948,6 @@
     </div>
 
     <!-- Application Script -->
-    <script src="static/js/app.js?v=512"></script>
+    <script src="static/js/app.js?v=515"></script>
 </body>
 </html>
-

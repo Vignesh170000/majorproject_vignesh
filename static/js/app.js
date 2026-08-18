@@ -162,29 +162,73 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --------------------------------------------------
-    // 3. Audio Waveform Spectrum Animation
+    // 3. Audio Waveform & Equalizer Bar Motion Engine
     // --------------------------------------------------
     function drawWaveform() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // 1. Draw Bidi Frequency Spectrum Bars
+        const barCount = 36;
+        const barWidth = (canvas.width / barCount) - 4;
+        
+        for (let i = 0; i < barCount; i++) {
+            const x = i * (barWidth + 4) + 2;
+            const seed = Math.sin(i * 0.5 + wavePhase * 2);
+            let barHeight = 4;
+            
+            if (isListening) {
+                barHeight = Math.max(6, Math.abs(seed) * 45 + Math.random() * 15);
+            } else if (isSpeaking) {
+                barHeight = Math.max(6, Math.abs(seed) * 32 + 8);
+            } else {
+                barHeight = Math.max(3, Math.abs(seed) * 8 + 2);
+            }
+
+            const y = (canvas.height - barHeight) / 2;
+            const barGradient = ctx.createLinearGradient(0, y, 0, y + barHeight);
+            
+            if (isListening) {
+                barGradient.addColorStop(0, '#f43f5e');
+                barGradient.addColorStop(0.5, '#00f2fe');
+                barGradient.addColorStop(1, '#8b5cf6');
+            } else if (isSpeaking) {
+                barGradient.addColorStop(0, '#00f2fe');
+                barGradient.addColorStop(0.5, '#10b981');
+                barGradient.addColorStop(1, '#8b5cf6');
+            } else {
+                barGradient.addColorStop(0, 'rgba(0, 242, 254, 0.3)');
+                barGradient.addColorStop(1, 'rgba(139, 92, 246, 0.2)');
+            }
+
+            ctx.fillStyle = barGradient;
+            ctx.shadowBlur = isListening || isSpeaking ? 12 : 0;
+            ctx.shadowColor = '#00f2fe';
+            ctx.beginPath();
+            ctx.roundRect(x, y, barWidth, barHeight, 3);
+            ctx.fill();
+        }
+
+        // 2. Draw Smooth Continuous Sine Wave Overlay
+        ctx.shadowBlur = 0;
         ctx.beginPath();
         ctx.lineWidth = 2.5;
 
-        const amplitude = isListening ? 24 : (isSpeaking ? 18 : 5);
-        const frequency = isListening ? 0.035 : 0.02;
+        const amplitude = isListening ? 22 : (isSpeaking ? 16 : 4);
+        const frequency = isListening ? 0.04 : 0.02;
         const speed = isListening ? 0.16 : (isSpeaking ? 0.1 : 0.04);
 
         const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
         if (isListening) {
-            gradient.addColorStop(0, '#f5576c');
+            gradient.addColorStop(0, '#f43f5e');
             gradient.addColorStop(0.5, '#ef4444');
             gradient.addColorStop(1, '#00f2fe');
         } else if (isSpeaking) {
             gradient.addColorStop(0, '#00f2fe');
-            gradient.addColorStop(0.5, '#7f00ff');
+            gradient.addColorStop(0.5, '#8b5cf6');
             gradient.addColorStop(1, '#10b981');
         } else {
-            gradient.addColorStop(0, 'rgba(0, 242, 254, 0.3)');
-            gradient.addColorStop(1, 'rgba(127, 0, 255, 0.3)');
+            gradient.addColorStop(0, 'rgba(0, 242, 254, 0.4)');
+            gradient.addColorStop(1, 'rgba(139, 92, 246, 0.4)');
         }
 
         ctx.strokeStyle = gradient;
@@ -205,18 +249,23 @@ document.addEventListener('DOMContentLoaded', () => {
     drawWaveform();
 
     // --------------------------------------------------
-    // 4. UI Helper Functions
+    // 4. UI Helper Functions & Kinetic Motion
     // --------------------------------------------------
+    const statusBadgeBar = document.getElementById('status-badge-bar');
+
     function setListeningState(listening) {
         isListening = listening;
         if (listening) {
             orbContainer.classList.add('listening');
             btnMicToggle.classList.add('listening');
+            if (statusBadgeBar) statusBadgeBar.classList.add('listening');
         } else {
             orbContainer.classList.remove('listening');
             btnMicToggle.classList.remove('listening');
+            if (statusBadgeBar) statusBadgeBar.classList.remove('listening');
         }
     }
+
 
     function updateStatus(text, mode) {
         statusText.textContent = text;

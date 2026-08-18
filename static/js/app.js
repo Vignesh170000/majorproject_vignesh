@@ -697,42 +697,58 @@ document.addEventListener('DOMContentLoaded', () => {
     // 6. System Gauges & Clock Polling
     // --------------------------------------------------
     async function updateSystemDashboard() {
-        // Clock
         const now = new Date();
-        liveClock.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        if (liveClock) liveClock.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
+        let data = null;
         try {
             const res = await fetch('/api/status');
-            const data = await res.json();
-            if (data.system_stats) {
-                // Parse CPU and RAM percentages
-                const cpuMatch = data.system_stats.match(/CPU Usage is ([\d\.]+)%/);
-                const ramMatch = data.system_stats.match(/RAM Usage is ([\d\.]+)%/);
-
-                if (cpuMatch) {
-                    const cpuPercent = parseFloat(cpuMatch[1]);
-                    cpuVal.textContent = `${cpuPercent}%`;
-                    cpuBar.style.width = `${cpuPercent}%`;
-                }
-                if (ramMatch) {
-                    const ramPercent = parseFloat(ramMatch[1]);
-                    ramVal.textContent = `${ramPercent}%`;
-                    ramBar.style.width = `${ramPercent}%`;
-                }
+            if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
+                data = await res.json();
             }
-            if (data.mic_available) {
+        } catch(e) {}
+
+        if (!data) {
+            try {
+                const res = await fetch('http://localhost:5000/api/status');
+                if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
+                    data = await res.json();
+                }
+            } catch(e) {}
+        }
+
+        if (data && data.system_stats) {
+            const cpuMatch = data.system_stats.match(/CPU Usage is ([\d\.]+)%/);
+            const ramMatch = data.system_stats.match(/RAM Usage is ([\d\.]+)%/);
+
+            if (cpuMatch && cpuVal && cpuBar) {
+                const cpuPercent = parseFloat(cpuMatch[1]);
+                cpuVal.textContent = `${cpuPercent}%`;
+                cpuBar.style.width = `${cpuPercent}%`;
+            }
+            if (ramMatch && ramVal && ramBar) {
+                const ramPercent = parseFloat(ramMatch[1]);
+                ramVal.textContent = `${ramPercent}%`;
+                ramBar.style.width = `${ramPercent}%`;
+            }
+            if (data.mic_available && micStatusLabel) {
                 micStatusLabel.textContent = 'Mic Ready';
             }
-        } catch (e) {
-            // Simulated random gauge values if backend polling fails
+        } else {
+            // Simulated random gauge values for published site
             const simCpu = Math.floor(12 + Math.random() * 18);
             const simRam = Math.floor(45 + Math.random() * 5);
-            cpuVal.textContent = `${simCpu}%`;
-            cpuBar.style.width = `${simCpu}%`;
-            ramVal.textContent = `${simRam}%`;
-            ramBar.style.width = `${simRam}%`;
+            if (cpuVal && cpuBar) {
+                cpuVal.textContent = `${simCpu}%`;
+                cpuBar.style.width = `${simCpu}%`;
+            }
+            if (ramVal && ramBar) {
+                ramVal.textContent = `${simRam}%`;
+                ramBar.style.width = `${simRam}%`;
+            }
         }
     }
+
 
     // --------------------------------------------------
     // 7. Event Listeners
@@ -911,15 +927,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (btnUserAuth) {
         btnUserAuth.addEventListener('click', () => {
-            if (currentUser.provider !== 'Guest') {
+            if (currentUser.provider && currentUser.provider !== 'Guest') {
                 if (confirm(`Logged in as ${currentUser.name} (${currentUser.email}). Log out?`)) {
-                    saveUserSession({ id: 'guest_user', name: 'Guest User', email: 'guest@aria.ai', provider: 'Guest' });
+                    saveUserSession({ id: 'guest_user_1', name: 'Guest User', email: 'guest@aria.ai', provider: 'Guest' });
                 }
-            } else if (authModal) {
-                authModal.style.display = 'flex';
+            } else {
+                window.location.href = 'login.html';
             }
         });
     }
+
 
     const chipBtnAuth = document.getElementById('chip-btn-auth');
     const chipBtnHistory = document.getElementById('chip-btn-history');

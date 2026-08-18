@@ -373,7 +373,7 @@
                         if (data.status === 'success') {
                             localStorage.setItem('aria_logged_user', JSON.stringify(data.user));
                             showAlert(`✓ Connected to SQL Database as User ID: ${data.user.id}. Redirecting...`);
-                            setTimeout(() => { window.location.href = window.location.pathname.includes('google_login.html') ? 'index.html' : '/'; }, 1000);
+                            setTimeout(() => { window.location.href = window.location.pathname.includes('google_login.html') ? 'index.html' : 'index.html'; }, 1000);
                             return;
                         }
                     }
@@ -392,7 +392,7 @@
             };
             localStorage.setItem('aria_logged_user', JSON.stringify(fallbackUser));
             showAlert(`✓ Authenticated as ${fallbackUser.name} (${fallbackUser.id}). Redirecting...`);
-            setTimeout(() => { window.location.href = window.location.pathname.includes('google_login.html') ? 'index.html' : '/'; }, 1000);
+            setTimeout(() => { window.location.href = 'index.html'; }, 1000);
         }
 
         document.getElementById('google-auth-form').addEventListener('submit', (e) => {

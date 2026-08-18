@@ -1,0 +1,24 @@
+{
+  "name": "majorproject_vignesh",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vignesh170000/majorproject_vignesh.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/vignesh170000/majorproject_vignesh/issues"
+  },
+  "homepage": "https://github.com/vignesh170000/majorproject_vignesh#readme",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
+}

@@ -17,24 +17,24 @@
 
     <style>
         :root {
-            --bg-dark: #070913;
-            --card-bg: rgba(15, 22, 41, 0.88);
+            --bg-dark: #000000;
+            --card-bg: rgba(12, 14, 24, 0.94);
             --card-border: rgba(0, 242, 254, 0.25);
             --accent-cyan: #00f2fe;
             --accent-blue: #4facfe;
             --accent-purple: #7f00ff;
             --accent-pink: #f5576c;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
             --danger: #ef4444;
             --font-main: 'Outfit', sans-serif;
             --font-heading: 'Space Grotesk', sans-serif;
         }
 
         body.light-theme {
-            --bg-dark: #f8fafc;
-            --card-bg: rgba(255, 255, 255, 0.94);
+            --bg-dark: #ffffff;
+            --card-bg: rgba(248, 250, 252, 0.96);
             --card-border: rgba(0, 51, 102, 0.15);
             --text-primary: #0f172a;
             --text-secondary: #334155;
@@ -58,7 +58,7 @@
 
         body {
             font-family: var(--font-main);
-            background-color: var(--bg-dark);
+            background-color: #000000;
             color: var(--text-primary);
             min-height: 100vh;
             display: flex;
@@ -66,8 +66,8 @@
             justify-content: center;
             padding: 20px;
             background-image: 
-                radial-gradient(circle at 15% 15%, rgba(127, 0, 255, 0.3) 0%, transparent 45%),
-                radial-gradient(circle at 85% 85%, rgba(0, 242, 254, 0.25) 0%, transparent 45%);
+                radial-gradient(circle at 15% 15%, rgba(127, 0, 255, 0.2) 0%, transparent 45%),
+                radial-gradient(circle at 85% 85%, rgba(0, 242, 254, 0.2) 0%, transparent 45%);
             background-attachment: fixed;
             position: relative;
         }
@@ -81,7 +81,7 @@
             border: 1px solid var(--card-border);
             border-radius: 24px;
             padding: 36px 30px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 242, 254, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), 0 0 40px rgba(0, 242, 254, 0.2);
             display: flex;
             flex-direction: column;
             gap: 20px;
@@ -228,7 +228,7 @@
 
         .form-input {
             width: 100%;
-            background: rgba(8, 12, 24, 0.85);
+            background: rgba(0, 0, 0, 0.85);
             border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 12px;
             padding: 13px 16px;
